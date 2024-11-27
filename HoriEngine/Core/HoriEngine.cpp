@@ -1,12 +1,14 @@
 ﻿#include "HoriEngine.h"
 
 #include "PhysicsSystem.h"
+#include "SpriteRenderer.h"
 
 namespace Hori
 {
 	extern World* g_world;
 
 	Engine::Engine()
+		: m_prevTime(std::chrono::high_resolution_clock::now())
 	{
 	}
 
@@ -16,15 +18,23 @@ namespace Hori
 
 	void Engine::InitSystems()
 	{
-		World::GetInstance().AddSystem(std::make_shared<PhysicsSystem>());
+		World::GetInstance().AddSystem<PhysicsSystem>(PhysicsSystem());
+		World::GetInstance().AddSystem<SpriteRenderer>(SpriteRenderer());
 	}
 
 	void Engine::Run()
 	{
-		while (!m_renderer->ShouldClose())
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> deltaTime = currentTime - m_prevTime;
+
+		while (!Renderer::GetInstance().ShouldClose())
 		{
-			m_renderer->RenderFrame();
+			Renderer::GetInstance().StartFrame();
+			World::GetInstance().UpdateSystems(deltaTime.count());
+			Renderer::GetInstance().EndFrame();
 		}
+
+		
 	}
 
 }

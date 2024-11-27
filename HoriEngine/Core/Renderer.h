@@ -8,13 +8,20 @@ namespace Hori
 	class Renderer
 	{
 	public:
-		Renderer();
+		Renderer(const Renderer&) = delete;
+		Renderer& operator=(const Renderer&) = delete;
+
+		static Renderer& GetInstance();
 
 		bool ShouldClose();
 
-		void RenderFrame();
+		void StartFrame();
+		void EndFrame();
 
 	private:
-		GLFWwindow* m_window = nullptr;
+		Renderer();
+		~Renderer();
+
+		static GLFWwindow* m_window;
 	};
 }

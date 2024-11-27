@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <World.h>
+#include <chrono>
 
 #include "Renderer.h"
 
@@ -17,7 +18,6 @@ namespace Hori
 		void Run();
 
 	private:
-		std::unique_ptr<Renderer> m_renderer{};
-
+		std::chrono::steady_clock::time_point m_prevTime;
 	};
 }
