@@ -11,6 +11,7 @@ find_package(imgui CONFIG REQUIRED)
 add_executable(ComponentTest ${SOURCES})
 
 target_link_libraries(ComponentTest PRIVATE HoriEngine::HoriEngine GTest::gtest GTest::gtest_main)
+
 add_test(NAME ComponentTest COMMAND ComponentTest)
 
 add_custom_command(

@@ -12,11 +12,13 @@ namespace Hori
 	class SpriteRenderer : public System
 	{
 	public:
-		SpriteRenderer() = default;
+		SpriteRenderer();
 
 		void Update(float deltaTime) override;
 
 	private:
 		void DrawSprite(Entity& entity);
+
+		GLuint m_quadVao;
 	};
 }

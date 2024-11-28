@@ -6,6 +6,35 @@
 
 namespace Hori
 {
+
+	SpriteRenderer::SpriteRenderer()
+	{
+		std::vector<float> vertices = {
+			0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, 0.0f, 1.0f, 0.0f,
+			0.0f, 0.0f, 0.0f, 0.0f,
+
+			0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, 1.0f, 1.0f, 1.0f,
+			1.0f, 0.0f, 1.0f, 0.0f
+		};
+
+		GLuint vbo;
+		glGenVertexArrays(1, &m_quadVao);
+		glGenBuffers(1, &vbo);
+
+		glBindVertexArray(m_quadVao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+
 	void SpriteRenderer::Update(float deltaTime)
 	{
 		auto entities = World::GetInstance().GetEntitiesWithComponents<Sprite>();
@@ -25,19 +54,20 @@ namespace Hori
 
 		shader.Use();
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(transform.position, 0.0f));
+		/*model = glm::translate(model, glm::vec3(transform.position, 0.0f));
 		model = glm::translate(model, glm::vec3(0.5 * transform.scale.x, 0.5 * transform.scale.y, 0.0));
 		model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3(0.0, 0.0, 1.0));
 		model = glm::translate(model, glm::vec3(-0.5 * transform.scale.x, -0.5 * transform.scale.y, 0.0));
+		*/
 		model = glm::scale(model, glm::vec3(transform.scale, 1.0f));
 
 		shader.SetMatrix4("model", model);
-		shader.SetVector3f("color", glm::vec3(1.0f, 0.0f, 0.0f));
+		shader.SetVector3f("spriteColor", glm::vec3(1.0f, 0.0f, 0.0f));
 		shader.SetMatrix4("projection", projection);
 
 		/*glActiveTexture(GL_TEXTURE0);
 		m_texture->Bind();*/
-		glBindVertexArray(sprite.m_vao);
+		glBindVertexArray(m_quadVao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	}

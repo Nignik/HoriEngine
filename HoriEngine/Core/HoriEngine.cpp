@@ -18,6 +18,7 @@ namespace Hori
 
 	void Engine::InitSystems()
 	{
+		Renderer::GetInstance();
 		World::GetInstance().AddSystem<PhysicsSystem>(PhysicsSystem());
 		World::GetInstance().AddSystem<SpriteRenderer>(SpriteRenderer());
 	}

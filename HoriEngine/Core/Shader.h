@@ -21,7 +21,6 @@ namespace Hori
 	public:
 		unsigned int Id;
 		Shader() {}
-		void	LoadFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
 		void    Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr); // note: geometry source code is optional 
 
 		void    SetFloat(const char* name, float value, bool useShader = false);

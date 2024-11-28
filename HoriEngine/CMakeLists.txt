@@ -8,26 +8,31 @@ find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
 add_library(HoriEngine STATIC ${SOURCES} ${HEADERS})
+
 target_include_directories(HoriEngine PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core>  # During the build
     $<INSTALL_INTERFACE:include/Core>  # After installation
-)
-
-# Install the header files to the "include" directory in the install location
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Core/ DESTINATION include/Core FILES_MATCHING PATTERN "*.h")
-
-# Generate and install the CMake config file for find_package
-install(EXPORT HoriEngineConfig
-    FILE HoriEngineConfig.cmake
-    NAMESPACE HoriEngine::
-    DESTINATION lib/cmake/HoriEngine
 )
 
 # Install the CMake configuration for package finding
 install(TARGETS HoriEngine EXPORT HoriEngineConfig 
         ARCHIVE DESTINATION lib           # For static libraries
         LIBRARY DESTINATION lib           # For shared libraries
-        RUNTIME DESTINATION bin)
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include
+)
+
+install(EXPORT HoriEngineConfig
+    FILE HoriEngineConfig.cmake
+    NAMESPACE HoriEngine::
+    DESTINATION lib/cmake/HoriEngine
+)
+
+# Install the header files to the "include" directory in the install location
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Core/ 
+    DESTINATION include/Core FILES_MATCHING PATTERN "*.h"
+)
 
 target_link_libraries(HoriEngine PUBLIC glfw glad::glad glm::glm imgui::imgui HECS::HECS)
 

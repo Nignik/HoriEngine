@@ -20,7 +20,5 @@ namespace Hori
 
 	protected:
 		friend class SpriteRenderer;
-
-		GLuint m_vao, m_vbo;
 	};
 }
