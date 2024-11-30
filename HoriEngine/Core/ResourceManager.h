@@ -56,20 +56,19 @@ namespace Hori
 		return shader;
 	}
 
-	inline std::shared_ptr<Texture2D> LoadTextureFromFile(std::string file, bool alpha)
+	inline Texture2D LoadTextureFromFile(std::string file, bool alpha)
 	{
-		// create texture object
-		std::shared_ptr<Texture2D> texture;
+		Texture2D texture;
 		if (alpha)
 		{
-			texture->InternalFormat = GL_RGBA;
-			texture->imageFormat = GL_RGBA;
+			texture.InternalFormat = GL_RGBA;
+			texture.imageFormat = GL_RGBA;
 		}
 		// load image
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
 		// now generate texture
-		texture->Generate(width, height, data);
+		texture.Generate(width, height, data);
 		// and finally free image data
 		stbi_image_free(data);
 		return texture;

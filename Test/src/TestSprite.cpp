@@ -3,12 +3,13 @@
 #include <Core/HoriEngine.h>
 #include <Core/Texture.h>
 #include <Core/ResourceManager.h>
+#include <Core/Controller.h>
 
 #include <gtest/gtest.h>
 
 TEST(TestSprite, RenderingSprites)
 {
-	Hori::Engine engine;
+	auto& engine = Hori::Engine::GetInstance();
 	engine.InitSystems();
 
 	auto& renderer = Hori::Renderer::GetInstance();
@@ -19,16 +20,16 @@ TEST(TestSprite, RenderingSprites)
 	Transform transform = {
 		.position = {200.0f, 200.0f},
 		.rotation = 0.0f,
-		.scale = {300.0f, 400.0f}
+		.scale = {200.0f, 200.0f}
 	};
-	Hori::Sprite sprite;
 	Hori::Shader shader = Hori::LoadShaderFromFile("shaders/sprite.vs", "shaders/sprite.fs");
-
-	//std::shared_ptr<Hori::Texture2D> texture = Hori::LoadTextureFromFile("xd", false);
+	Hori::Texture2D texture = Hori::LoadTextureFromFile("resources/sprites/awesomeface.png", true);
 	
-	world.AddComponent(newEntity, sprite);
+	world.AddComponent(newEntity, Hori::Sprite());
+	world.AddComponent(newEntity, Hori::Controller());
 	world.AddComponent(newEntity, shader);
 	world.AddComponent(newEntity, transform);
+	world.AddComponent(newEntity, texture);
 	
 	engine.Run();
 }

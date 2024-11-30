@@ -18,6 +18,8 @@ namespace Hori
 		void StartFrame();
 		void EndFrame();
 
+		GLFWwindow* GetWindow();
+
 	private:
 		Renderer();
 		~Renderer();

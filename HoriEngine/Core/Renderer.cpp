@@ -6,13 +6,6 @@
 
 namespace Hori
 {
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-	{
-		// when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, true);
-	}
-
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
@@ -46,7 +39,6 @@ namespace Hori
 		}
 
 		glfwMakeContextCurrent(m_window);
-		glfwSetKeyCallback(m_window, key_callback);
 		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
 		// For gladLoadGLLoader
@@ -96,6 +88,12 @@ namespace Hori
 	{
 		glfwSwapBuffers(m_window);
 	}
+
+	GLFWwindow* Renderer::GetWindow()
+	{
+		return m_window;
+	}
+
 }
 
 

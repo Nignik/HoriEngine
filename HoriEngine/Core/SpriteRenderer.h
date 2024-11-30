@@ -17,7 +17,7 @@ namespace Hori
 		void Update(float deltaTime) override;
 
 	private:
-		void DrawSprite(Entity& entity);
+		void DrawSprite(const Entity& entity);
 
 		GLuint m_quadVao;
 	};
