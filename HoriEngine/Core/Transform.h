@@ -2,9 +2,12 @@
 
 #include <glm/glm.hpp>
 
-struct Transform
+namespace Hori
 {
-	glm::vec2 position{};
-	float rotation{};
-	glm::vec2 scale{};
-};
+	struct Transform
+	{
+		glm::vec2 position{};
+		float rotation{};
+		glm::vec2 scale{};
+	};
+}

@@ -5,6 +5,7 @@
 #include <World.h>
 #include <controller.h>
 #include <Transform.h>
+#include "VelocityComponent.h"
 
 #include <iostream>
 
@@ -23,24 +24,20 @@ namespace Hori
 
 	void ActionSystem::Move(const Entity& entity, std::vector<int>& input)
 	{
-		auto& transform = World::GetInstance().GetComponent<Transform>(entity);
+		auto& velocity = World::GetInstance().GetComponent<VelocityComponent>(entity).velocity;
+		velocity = { 0.0f, 0.0f };
 
 		if (input[GLFW_KEY_W])
-		{
-			transform.position.y -= 5.0f;
-		}
+			velocity.y -= 25.0f;
+		
 		if (input[GLFW_KEY_S])
-		{
-			transform.position.y += 5.0f;
-		}
+			velocity.y += 25.0f;
+		
 		if (input[GLFW_KEY_D])
-		{
-			transform.position.x += 5.0f;
-		}
+			velocity.x += 25.0f;
+
 		if (input[GLFW_KEY_A])
-		{
-			transform.position.x -= 5.0f;
-		}
+			velocity.x -= 25.0f;
 	}
 
 }
