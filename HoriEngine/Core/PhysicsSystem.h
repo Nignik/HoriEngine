@@ -14,7 +14,8 @@ namespace Hori
 
 	private:
 		bool BBCollision(const Entity& entity1, const Entity& entity2);
-		void SSCollision(const Entity& entity1, const Entity& entity2, float deltaTime);
+		bool SSCollision(const Entity& entity1, const Entity& entity2, float deltaTime);
 		bool BSCollision(const Entity& boxEntity, const Entity& sphereEntity);
+		void Move(const Entity& entity, float deltaTime);
 	};
 }

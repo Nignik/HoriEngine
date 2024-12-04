@@ -17,6 +17,7 @@ namespace Hori
 	{
 		World& world = World::GetInstance();
 
+		// Not implemented yet
 		for (const auto& entity1 : world.GetEntitiesWithComponents<BoxCollider, VelocityComponent>())
 		{
 			bool isColliding = false;
@@ -27,9 +28,6 @@ namespace Hori
 
 				BBCollision(entity1, entity2);
 			}
-
-			if (isColliding)
-				continue;
 			
 			for (const auto& entity2 : World::GetInstance().GetEntitiesWithComponents<SphereCollider>())
 			{
@@ -48,7 +46,11 @@ namespace Hori
 				if (entity1.GetID() == entity2.GetID())
 					continue;
 
-				SSCollision(entity1, entity2, deltaTime);
+				if (SSCollision(entity1, entity2, deltaTime))
+				{
+					isColliding = true;
+					break;
+				}
 			}
 
 			if (isColliding)
@@ -61,6 +63,11 @@ namespace Hori
 
 				BSCollision(entity2, entity1);
 			}
+
+			if (!isColliding)
+			{
+				Move(entity1, deltaTime);
+			}
 		}
 	}
 
@@ -69,7 +76,7 @@ namespace Hori
 		return false;
 	}
 
-	void PhysicsSystem::SSCollision(const Entity& entity1, const Entity& entity2, float deltaTime)
+	bool PhysicsSystem::SSCollision(const Entity& entity1, const Entity& entity2, float deltaTime)
 	{
 		auto& colliderPos1 = World::GetInstance().GetComponent<SphereCollider>(entity1).transform.position;
 		auto& colliderPos2 = World::GetInstance().GetComponent<SphereCollider>(entity2).transform.position;
@@ -88,17 +95,26 @@ namespace Hori
 
 			objectPos1 += displacement;
 			colliderPos1 += displacement;
+
+			return true;
 		}
-		else
-		{
-			colliderPos1 += vel1 * deltaTime;
-			objectPos1 += vel1 * deltaTime;
-		}
+
+		return false;
 	}
 
 	bool PhysicsSystem::BSCollision(const Entity& boxEntity, const Entity& sphereEntity)
 	{
 		return false;
+	}
+
+	void PhysicsSystem::Move(const Entity& entity, float deltaTime)
+	{
+		auto& colliderPos = World::GetInstance().GetComponent<SphereCollider>(entity).transform.position;
+		auto& objectPos = World::GetInstance().GetComponent<Transform>(entity).position;
+		glm::vec2 vel = World::GetInstance().GetComponent<VelocityComponent>(entity).velocity;
+
+		colliderPos += vel * deltaTime;
+		objectPos += vel * deltaTime;
 	}
 
 }
