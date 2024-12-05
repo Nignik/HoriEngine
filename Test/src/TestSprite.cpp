@@ -29,7 +29,7 @@ TEST(TestSprite, RenderingSprites)
 	
 	world.AddComponent(player, Hori::Sprite());
 	world.AddComponent(player, Hori::Controller());
-	world.AddComponent(player, Hori::VelocityComponent());
+	world.AddComponent(player, Hori::VelocityComponent({0.0f, 0.0f}, 50.0f));
 	world.AddComponent(player, Hori::SphereCollider(Hori::Transform({ 300.0f, 300.0f }, 0.0f, { 50.0f, 50.0f }), 100.0f));
 	world.AddComponent(player, shader);
 	world.AddComponent(player, transform);

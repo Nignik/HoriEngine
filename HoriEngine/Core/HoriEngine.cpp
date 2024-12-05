@@ -35,10 +35,13 @@ namespace Hori
 	void Engine::Run()
 	{
 		auto currentTime = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> deltaTime = currentTime - m_prevTime;
-
+		
 		while (!Renderer::GetInstance().ShouldClose())
 		{
+			currentTime = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<float> deltaTime = currentTime - m_prevTime;
+			m_prevTime = currentTime;
+
 			Renderer::GetInstance().StartFrame();
 			World::GetInstance().UpdateSystems(deltaTime.count());
 			Renderer::GetInstance().EndFrame();

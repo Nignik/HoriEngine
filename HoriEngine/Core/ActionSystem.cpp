@@ -24,20 +24,25 @@ namespace Hori
 
 	void ActionSystem::Move(const Entity& entity, std::vector<int>& input)
 	{
-		auto& velocity = World::GetInstance().GetComponent<VelocityComponent>(entity).velocity;
-		velocity = { 0.0f, 0.0f };
+		auto& velocity = World::GetInstance().GetComponent<VelocityComponent>(entity);
+		velocity = { {0.0f, 0.0f}, velocity.speed };
 
 		if (input[GLFW_KEY_W])
-			velocity.y -= 25.0f;
+			velocity.dir.y -= 1.0f;
 		
 		if (input[GLFW_KEY_S])
-			velocity.y += 25.0f;
+			velocity.dir.y += 1.0f;
 		
 		if (input[GLFW_KEY_D])
-			velocity.x += 25.0f;
+			velocity.dir.x += 1.0f;
 
 		if (input[GLFW_KEY_A])
-			velocity.x -= 25.0f;
+			velocity.dir.x -= 1.0f;
+
+		if (glm::length(velocity.dir) > 0.0f)
+			velocity.dir = glm::normalize(velocity.dir);
+		else
+			velocity.dir = { 0.0f, 0.0f };
 	}
 
 }

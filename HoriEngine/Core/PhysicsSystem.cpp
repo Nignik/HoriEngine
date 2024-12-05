@@ -85,9 +85,9 @@ namespace Hori
 		auto& r1 = World::GetInstance().GetComponent<SphereCollider>(entity1).radius;
 		auto& r2 = World::GetInstance().GetComponent<SphereCollider>(entity2).radius;
 
-		glm::vec2 vel1 = World::GetInstance().GetComponent<VelocityComponent>(entity1).velocity;
+		auto& vel1 = World::GetInstance().GetComponent<VelocityComponent>(entity1);
 
-		if (glm::distance(colliderPos1 + vel1 * deltaTime, colliderPos2) <= r1 + r2)
+		if (glm::distance(colliderPos1 + vel1.dir * vel1.speed * deltaTime, colliderPos2) <= r1 + r2)
 		{
 			glm::vec2 dir = glm::normalize(colliderPos1 - colliderPos2);
 			glm::vec2 newPos = colliderPos2 + dir * (r1 + r2 + 0.01f);
@@ -111,10 +111,10 @@ namespace Hori
 	{
 		auto& colliderPos = World::GetInstance().GetComponent<SphereCollider>(entity).transform.position;
 		auto& objectPos = World::GetInstance().GetComponent<Transform>(entity).position;
-		glm::vec2 vel = World::GetInstance().GetComponent<VelocityComponent>(entity).velocity;
+		auto& vel = World::GetInstance().GetComponent<VelocityComponent>(entity);
 
-		colliderPos += vel * deltaTime;
-		objectPos += vel * deltaTime;
+		colliderPos += vel.dir * vel.speed * deltaTime;
+		objectPos += vel.dir * vel.speed * deltaTime;
 	}
 
 }
