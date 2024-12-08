@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 namespace Hori
 {
@@ -19,10 +20,13 @@ namespace Hori
 		void EndFrame();
 
 		GLFWwindow* GetWindow();
+		glm::vec2 GetScreenSize();
 
 	private:
 		Renderer();
 		~Renderer();
+
+		glm::vec2 m_screenSize;
 
 		static GLFWwindow* m_window;
 	};

@@ -2,6 +2,7 @@
 
 #include "Collider.h"
 #include "VelocityComponent.h"
+#include "EventManager.h"
 
 #include <World.h>
 
@@ -17,84 +18,76 @@ namespace Hori
 	{
 		World& world = World::GetInstance();
 
-		// Not implemented yet
-		for (const auto& entity1 : world.GetEntitiesWithComponents<BoxCollider, VelocityComponent>())
+		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
 		{
-			bool isColliding = false;
-			for (const auto& entity2 : World::GetInstance().GetEntitiesWithComponents<BoxCollider>())
+			if (!world.HasComponent<SphereCollider>(entity.GetID()))
 			{
-				if (entity1.GetID() == entity2.GetID())
-					continue;
-
-				BBCollision(entity1, entity2);
-			}
-			
-			for (const auto& entity2 : World::GetInstance().GetEntitiesWithComponents<SphereCollider>())
-			{
-				if (entity1.GetID() == entity2.GetID())
-					continue;
-
-				BSCollision(entity1, entity2);
+				Move(entity, deltaTime);
 			}
 		}
 
-		for (const auto& entity1 : world.GetEntitiesWithComponents<SphereCollider, VelocityComponent>())
+		for (auto entityA : world.GetEntitiesWithComponents<SphereCollider, VelocityComponent>())
 		{
 			bool isColliding = false;
-			for (const auto& entity2 : World::GetInstance().GetEntitiesWithComponents<SphereCollider>())
+			for (auto entityB : World::GetInstance().GetEntitiesWithComponents<SphereCollider>())
 			{
-				if (entity1.GetID() == entity2.GetID())
+				if (entityA.GetID() == entityB.GetID())
 					continue;
 
-				if (SSCollision(entity1, entity2, deltaTime))
+				if (SSCollision(entityA, entityB, deltaTime))
 				{
 					isColliding = true;
 					break;
 				}
 			}
 
-			if (isColliding)
-				continue;
-
-			for (const auto& entity2 : World::GetInstance().GetEntitiesWithComponents<BoxCollider>())
-			{
-				if (entity1.GetID() == entity2.GetID())
-					continue;
-
-				BSCollision(entity2, entity1);
-			}
-
 			if (!isColliding)
 			{
-				Move(entity1, deltaTime);
+				Move(entityA, deltaTime);
 			}
 		}
 	}
 
-	bool PhysicsSystem::BBCollision(const Entity& entity1, const Entity& entity2)
+	bool PhysicsSystem::BBCollision(Entity& entityA, Entity& entityB)
 	{
 		return false;
 	}
 
-	bool PhysicsSystem::SSCollision(const Entity& entity1, const Entity& entity2, float deltaTime)
+	bool PhysicsSystem::SSCollision(Entity& entityA, Entity& entityB, float deltaTime)
 	{
-		auto& colliderPos1 = World::GetInstance().GetComponent<SphereCollider>(entity1).transform.position;
-		auto& colliderPos2 = World::GetInstance().GetComponent<SphereCollider>(entity2).transform.position;
-		auto& objectPos1 = World::GetInstance().GetComponent<Transform>(entity1).position;
-		auto& objectPos2 = World::GetInstance().GetComponent<Transform>(entity2).position;
-		auto& r1 = World::GetInstance().GetComponent<SphereCollider>(entity1).radius;
-		auto& r2 = World::GetInstance().GetComponent<SphereCollider>(entity2).radius;
+		auto& world = World::GetInstance();
+		auto& colliderA = world.GetComponent<SphereCollider>(entityA);
+		auto& colliderB = world.GetComponent<SphereCollider>(entityB);
+		auto& colliderPosA = colliderA.transform.position;
+		auto& colliderPosB = colliderB.transform.position;
+		auto& objectPosA = world.GetComponent<Transform>(entityA).position;
+		auto& objectPosB = world.GetComponent<Transform>(entityB).position;
+		auto& rA = world.GetComponent<SphereCollider>(entityA).radius;
+		auto& rB = world.GetComponent<SphereCollider>(entityB).radius;
 
-		auto& vel1 = World::GetInstance().GetComponent<VelocityComponent>(entity1);
+		auto& vel1 = world.GetComponent<VelocityComponent>(entityA);
 
-		if (glm::distance(colliderPos1 + vel1.dir * vel1.speed * deltaTime, colliderPos2) <= r1 + r2)
+		if (glm::distance(colliderPosA + vel1.dir * vel1.speed * deltaTime, colliderPosB) <= rA + rB)
 		{
-			glm::vec2 dir = glm::normalize(colliderPos1 - colliderPos2);
-			glm::vec2 newPos = colliderPos2 + dir * (r1 + r2 + 0.01f);
-			glm::vec2 displacement = newPos - colliderPos1;
+			glm::vec2 dir = glm::normalize(colliderPosA - colliderPosB);
+			glm::vec2 newPos = colliderPosB + dir * (rA + rB + 0.01f);
+			glm::vec2 displacement = newPos - colliderPosA;
 
-			objectPos1 += displacement;
-			colliderPos1 += displacement;
+			if (colliderA.isTrigger)
+			{
+				TriggerEvent event(entityA, entityB);
+				EventManager::GetInstance().AddEvents<TriggerEvent>(event);
+
+				Move(entityA, deltaTime);
+			}
+			else
+			{
+				CollisionEvent event(entityA, entityB, dir * rB, dir);
+				EventManager::GetInstance().AddEvents<CollisionEvent>(event);
+
+				objectPosA += displacement;
+				colliderPosA += displacement;
+			}
 
 			return true;
 		}
@@ -102,18 +95,22 @@ namespace Hori
 		return false;
 	}
 
-	bool PhysicsSystem::BSCollision(const Entity& boxEntity, const Entity& sphereEntity)
+	bool PhysicsSystem::BSCollision(Entity& boxEntity, Entity& sphereEntity)
 	{
 		return false;
 	}
 
-	void PhysicsSystem::Move(const Entity& entity, float deltaTime)
+	void PhysicsSystem::Move(Entity& entity, float deltaTime)
 	{
-		auto& colliderPos = World::GetInstance().GetComponent<SphereCollider>(entity).transform.position;
 		auto& objectPos = World::GetInstance().GetComponent<Transform>(entity).position;
 		auto& vel = World::GetInstance().GetComponent<VelocityComponent>(entity);
 
-		colliderPos += vel.dir * vel.speed * deltaTime;
+		if (World::GetInstance().HasComponent<SphereCollider>(entity.GetID()))
+		{
+			auto& colliderPos = World::GetInstance().GetComponent<SphereCollider>(entity).transform.position;
+			colliderPos += vel.dir * vel.speed * deltaTime;
+		}
+		
 		objectPos += vel.dir * vel.speed * deltaTime;
 	}
 

@@ -14,6 +14,7 @@ namespace Hori
 	GLFWwindow* Renderer::m_window = nullptr;
 
 	Renderer::Renderer()
+		: m_screenSize(800, 600)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -28,7 +29,7 @@ namespace Hori
 			throw std::runtime_error("Failed to initialize GLFW");
 		}
 
-		m_window = glfwCreateWindow(800, 600, "Hori", nullptr, nullptr);
+		m_window = glfwCreateWindow(m_screenSize.x, m_screenSize.y, "Hori", nullptr, nullptr);
 
 		// After glfwCreateWindow
 		if (m_window == nullptr)
@@ -50,7 +51,7 @@ namespace Hori
 			throw std::runtime_error("Failed to initialize GLAD");
 		}
 
-		glViewport(0, 0, 800, 600);
+		glViewport(0, 0, m_screenSize.x, m_screenSize.y);
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -94,6 +95,10 @@ namespace Hori
 		return m_window;
 	}
 
+	glm::vec2 Renderer::GetScreenSize()
+	{
+		return m_screenSize;
+	}
 }
 
 
