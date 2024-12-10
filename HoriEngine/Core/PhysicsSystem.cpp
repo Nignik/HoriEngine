@@ -6,139 +6,205 @@
 
 #include <World.h>
 #include <iostream>
+#include <glm/glm.hpp>
 
 namespace Hori
 {
+	struct CollisionPair
+	{
+		Entity entityA;
+		Entity entityB;
+	};
+
 	PhysicsSystem::PhysicsSystem()
 	{
-
 	}
 
 	void PhysicsSystem::Update(float deltaTime)
 	{
 		World& world = World::GetInstance();
 
+		// Move all non-collidable entities first (those without colliders or triggers)
+		// Also gather candidates for broad-phase collision detection.
+		std::vector<Entity> dynamicCollidables;
 		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
 		{
-			if (!world.HasComponent<SphereCollider>(entity.GetID()))
+			bool hasSphere = world.HasComponent<SphereCollider>(entity.GetID());
+			if (!hasSphere)
 			{
 				Move(entity, deltaTime);
 			}
-		}
-
-		for (auto entityA : world.GetEntitiesWithComponents<SphereCollider, VelocityComponent>())
-		{
-			bool isColliding = false;
-			for (auto entityB : World::GetInstance().GetEntitiesWithComponents<SphereCollider>())
+			else
 			{
-				if (entityA.GetID() == entityB.GetID())
-					continue;
-
-				if (SSCollision(entityA, entityB, deltaTime))
-				{
-					isColliding = true;
-					break;
-				}
-
-				// Check if the entityA trigger previously had entityB in inside, if so then delete it
-				if (!isColliding && m_activeTriggers[entityA].find(entityB) != m_activeTriggers[entityA].end())
-				{
-					m_activeTriggers[entityA].erase(entityB);
-				}
-				if (!isColliding && m_activeTriggers[entityB].find(entityA) != m_activeTriggers[entityB].end())
-				{
-					m_activeTriggers[entityB].erase(entityA);
-				}
-			}
-
-			if (!isColliding)
-			{
-				Move(entityA, deltaTime);
+				dynamicCollidables.push_back(entity);
 			}
 		}
-	}
 
-	bool PhysicsSystem::BBCollision(Entity& entityA, Entity& entityB)
-	{
-		return false;
-	}
-
-	bool PhysicsSystem::SSCollision(Entity& entityA, Entity& entityB, float deltaTime)
-	{
-		auto& world = World::GetInstance();
-		auto& colliderA = world.GetComponent<SphereCollider>(entityA);
-		auto& colliderB = world.GetComponent<SphereCollider>(entityB);
-		auto& colliderPosA = colliderA.transform.position;
-		auto& colliderPosB = colliderB.transform.position;
-		auto& objectPosA = world.GetComponent<Transform>(entityA).position;
-		auto& objectPosB = world.GetComponent<Transform>(entityB).position;
-		auto& rA = world.GetComponent<SphereCollider>(entityA).radius;
-		auto& rB = world.GetComponent<SphereCollider>(entityB).radius;
-
-		auto& vel1 = world.GetComponent<VelocityComponent>(entityA);
-
-		if (glm::distance(colliderPosA + vel1.dir * vel1.speed * deltaTime, colliderPosB) <= rA + rB)
+		// Broad-phase collision detection
+		// For now N^2 brute force, but can be optimized
+		std::vector<CollisionPair> collisionCandidates;
 		{
-			glm::vec2 dir = glm::normalize(colliderPosA - colliderPosB);
-			glm::vec2 newPos = colliderPosB + dir * (rA + rB + 0.01f);
-			glm::vec2 displacement = newPos - colliderPosA;
-
-			if (colliderA.isTrigger)
+			auto colliders = world.GetEntitiesWithComponents<SphereCollider>();
+			for (size_t i = 0; i < colliders.size(); ++i)
 			{
-				if (m_activeTriggers[entityA].find(entityB) == m_activeTriggers[entityA].end())
+				for (size_t j = i + 1; j < colliders.size(); ++j)
 				{
-					m_activeTriggers[entityB].insert(entityB);
-					std::cout << "Event triggered" << std::endl;
-					TriggerEvent event(entityA, entityB);
-					EventManager::GetInstance().AddEvents<TriggerEvent>(event);
+					auto eA = colliders[i];
+					auto eB = colliders[j];
+
+					bool aIsDynamic = std::find(dynamicCollidables.begin(), dynamicCollidables.end(), eA) != dynamicCollidables.end();
+					bool bIsDynamic = std::find(dynamicCollidables.begin(), dynamicCollidables.end(), eB) != dynamicCollidables.end();
+					if (!aIsDynamic && !bIsDynamic)
+						continue;
+
+					collisionCandidates.push_back({ eA, eB });
 				}
-				
-				Move(entityA, deltaTime);
 			}
-			else if (colliderB.isTrigger)
-			{
-				if (m_activeTriggers[entityB].find(entityA) == m_activeTriggers[entityB].end())
-				{
-					m_activeTriggers[entityB].insert(entityA);
-					std::cout << "Event triggered" << std::endl;
-					TriggerEvent event(entityB, entityA);
-					EventManager::GetInstance().AddEvents<TriggerEvent>(event);
-				}
+		}
 
-				Move(entityA, deltaTime);
+		std::vector<CollisionEvent> collisionEvents;
+		std::vector<TriggerEvent> triggerEvents;
+
+		for (auto& e : dynamicCollidables)
+		{
+			Move(e, deltaTime);
+		}
+
+		for (auto& pair : collisionCandidates)
+		{
+			Entity eA = pair.entityA;
+			Entity eB = pair.entityB;
+
+			const auto& colA = world.GetComponent<SphereCollider>(eA);
+			const auto& colB = world.GetComponent<SphereCollider>(eB);
+
+			if (CheckSphereSphereCollision(eA, eB))
+			{
+				bool aIsTrigger = colA.isTrigger;
+				bool bIsTrigger = colB.isTrigger;
+
+				if (aIsTrigger || bIsTrigger)
+				{
+					HandleTrigger(eA, eB, triggerEvents);
+				}
+				else
+				{
+					ResolveSphereSphereCollision(eA, eB);
+					glm::vec2 dir = glm::normalize(world.GetComponent<Transform>(eA).position - world.GetComponent<Transform>(eB).position);
+					CollisionEvent event(eA, eB, dir * colB.radius, dir);
+					collisionEvents.push_back(event);
+				}
 			}
 			else
 			{
-				CollisionEvent event(entityA, entityB, dir * rB, dir);
-				EventManager::GetInstance().AddEvents<CollisionEvent>(event);
-
-				objectPosA += displacement;
-				colliderPosA += displacement;
+				RemoveInactiveTriggers(eA, eB);
 			}
-
-			return true;
 		}
 
-		return false;
-	}
-
-	bool PhysicsSystem::BSCollision(Entity& boxEntity, Entity& sphereEntity)
-	{
-		return false;
-	}
-
-	void PhysicsSystem::Move(Entity& entity, float deltaTime)
-	{
-		auto& objectPos = World::GetInstance().GetComponent<Transform>(entity).position;
-		auto& vel = World::GetInstance().GetComponent<VelocityComponent>(entity);
-
-		if (World::GetInstance().HasComponent<SphereCollider>(entity.GetID()))
+		for (auto& ev : triggerEvents)
 		{
-			auto& colliderPos = World::GetInstance().GetComponent<SphereCollider>(entity).transform.position;
-			colliderPos += vel.dir * vel.speed * deltaTime;
+			EventManager::GetInstance().AddEvents<TriggerEvent>(ev);
 		}
-		
-		objectPos += vel.dir * vel.speed * deltaTime;
+
+		for (auto& ev : collisionEvents)
+		{
+			EventManager::GetInstance().AddEvents<CollisionEvent>(ev);
+		}
+	}
+
+	bool PhysicsSystem::CheckSphereSphereCollision(Entity eA, Entity eB)
+	{
+		auto& world = World::GetInstance();
+		const auto& colliderA = world.GetComponent<SphereCollider>(eA);
+		const auto& colliderB = world.GetComponent<SphereCollider>(eB);
+
+		float distance = glm::distance(colliderA.transform.position, colliderB.transform.position);
+		float radiusSum = colliderA.radius + colliderB.radius;
+		return distance <= radiusSum;
+	}
+
+	void PhysicsSystem::ResolveSphereSphereCollision(Entity eA, Entity eB)
+	{
+		auto& world = World::GetInstance();
+
+		auto& transformA = world.GetComponent<Transform>(eA);
+		auto& transformB = world.GetComponent<Transform>(eB);
+
+		auto& colliderA = world.GetComponent<SphereCollider>(eA);
+		auto& colliderB = world.GetComponent<SphereCollider>(eB);
+
+		glm::vec2 posA = colliderA.transform.position;
+		glm::vec2 posB = colliderB.transform.position;
+
+		glm::vec2 delta = posA - posB;
+		float dist = glm::length(delta);
+		if (dist == 0.0f)
+		{
+			delta = glm::vec2(1.0f, 0.0f);
+			dist = 0.0001f;
+		}
+
+		float overlap = (colliderA.radius + colliderB.radius) - dist;
+		glm::vec2 correction = glm::normalize(delta) * overlap * 0.5f;
+
+		transformA.position += correction;
+		colliderA.transform.position += correction;
+		transformB.position -= correction;
+		colliderB.transform.position -= correction;
+	}
+
+	void PhysicsSystem::HandleTrigger(Entity eA, Entity eB, std::vector<TriggerEvent>& triggerEvents)
+	{
+		auto& world = World::GetInstance();
+		auto& colA = world.GetComponent<SphereCollider>(eA);
+		auto& colB = world.GetComponent<SphereCollider>(eB);
+
+		if (colA.isTrigger)
+		{
+			if (m_activeTriggers[eA].find(eB) == m_activeTriggers[eA].end())
+			{
+				std::cout << "Triggered" << std::endl;
+				m_activeTriggers[eA].insert(eB);
+				triggerEvents.emplace_back(eA, eB);
+			}
+		}
+		if (colB.isTrigger)
+		{
+			if (m_activeTriggers[eB].find(eA) == m_activeTriggers[eB].end())
+			{
+				std::cout << "Triggered" << std::endl;
+				m_activeTriggers[eB].insert(eA);
+				triggerEvents.emplace_back(eB, eA);
+			}
+		}
+	}
+
+	void PhysicsSystem::RemoveInactiveTriggers(Entity eA, Entity eB)
+	{
+		if (m_activeTriggers[eA].find(eB) != m_activeTriggers[eA].end())
+		{
+			m_activeTriggers[eA].erase(eB);
+		}
+		if (m_activeTriggers[eB].find(eA) != m_activeTriggers[eB].end())
+		{
+			m_activeTriggers[eB].erase(eA);
+		}
+	}
+
+	void PhysicsSystem::Move(Entity entity, float deltaTime)
+	{
+		World& world = World::GetInstance();
+		auto& objectPos = world.GetComponent<Transform>(entity).position;
+		auto& vel = world.GetComponent<VelocityComponent>(entity);
+
+		glm::vec2 displacement = vel.dir * vel.speed * deltaTime;
+		objectPos += displacement;
+
+		if (world.HasComponent<SphereCollider>(entity.GetID()))
+		{
+			auto& colliderPos = world.GetComponent<SphereCollider>(entity).transform.position;
+			colliderPos += displacement;
+		}
 	}
 
 }

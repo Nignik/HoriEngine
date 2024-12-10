@@ -38,7 +38,7 @@ TEST(TestSprite, RenderingSprites)
 	const auto& box = world.CreateEntity();
 	world.AddComponent(box, Hori::Sprite());
 	world.AddComponent(box, Hori::Transform({ 50.0f, 50.0f }, 0.0f, { 50.0f, 50.0f }));
-	world.AddComponent(box, Hori::SphereCollider(Hori::Transform({ 75.0f, 75.0f }, 0.0f, { 50.0f, 50.0f }), 25.0f, true));
+	world.AddComponent(box, Hori::SphereCollider(Hori::Transform({ 75.0f, 75.0f }, 0.0f, { 50.0f, 50.0f }), 25.0f, false));
 	world.AddComponent(box, shader);
 	world.AddComponent(box, texture);
 
