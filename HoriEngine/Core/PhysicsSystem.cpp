@@ -5,7 +5,7 @@
 #include "EventManager.h"
 
 #include <World.h>
-
+#include <iostream>
 
 namespace Hori
 {
@@ -38,6 +38,16 @@ namespace Hori
 				{
 					isColliding = true;
 					break;
+				}
+
+				// Check if the entityA trigger previously had entityB in inside, if so then delete it
+				if (!isColliding && m_activeTriggers[entityA].find(entityB) != m_activeTriggers[entityA].end())
+				{
+					m_activeTriggers[entityA].erase(entityB);
+				}
+				if (!isColliding && m_activeTriggers[entityB].find(entityA) != m_activeTriggers[entityB].end())
+				{
+					m_activeTriggers[entityB].erase(entityA);
 				}
 			}
 
@@ -75,8 +85,25 @@ namespace Hori
 
 			if (colliderA.isTrigger)
 			{
-				TriggerEvent event(entityA, entityB);
-				EventManager::GetInstance().AddEvents<TriggerEvent>(event);
+				if (m_activeTriggers[entityA].find(entityB) == m_activeTriggers[entityA].end())
+				{
+					m_activeTriggers[entityB].insert(entityB);
+					std::cout << "Event triggered" << std::endl;
+					TriggerEvent event(entityA, entityB);
+					EventManager::GetInstance().AddEvents<TriggerEvent>(event);
+				}
+				
+				Move(entityA, deltaTime);
+			}
+			else if (colliderB.isTrigger)
+			{
+				if (m_activeTriggers[entityB].find(entityA) == m_activeTriggers[entityB].end())
+				{
+					m_activeTriggers[entityB].insert(entityA);
+					std::cout << "Event triggered" << std::endl;
+					TriggerEvent event(entityB, entityA);
+					EventManager::GetInstance().AddEvents<TriggerEvent>(event);
+				}
 
 				Move(entityA, deltaTime);
 			}

@@ -26,7 +26,7 @@ namespace Hori
 		Renderer();
 		~Renderer();
 
-		glm::vec2 m_screenSize;
+		glm::ivec2 m_screenSize;
 
 		static GLFWwindow* m_window;
 	};
