@@ -12,6 +12,13 @@ namespace Hori
 {
 	struct SphereCollider
 	{
+		SphereCollider(Transform transform, bool isTrigger = false)
+			: transform({ transform.position + transform.scale * 0.5f, transform.rotation, transform.scale * 0.5f }),
+			radius(transform.scale.x * 0.5f),
+			isTrigger(isTrigger)
+		{
+		}
+
 		Transform transform;
 		float radius{};
 		bool isTrigger = false;

@@ -24,8 +24,6 @@ namespace Hori
 	{
 		World& world = World::GetInstance();
 
-		// Move all non-collidable entities first (those without colliders or triggers)
-		// Also gather candidates for broad-phase collision detection.
 		std::vector<Entity> dynamicCollidables;
 		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
 		{

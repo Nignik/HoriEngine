@@ -45,6 +45,7 @@ namespace Hori
 			Renderer::GetInstance().StartFrame();
 			World::GetInstance().UpdateSystems(deltaTime.count());
 			Renderer::GetInstance().EndFrame();
+			EventManager::GetInstance().Clear();
 		}
 	}
 
