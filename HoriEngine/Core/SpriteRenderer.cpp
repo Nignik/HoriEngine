@@ -45,29 +45,29 @@ namespace Hori
 
 	void SpriteRenderer::DrawSprite(const Entity& entity)
 	{
-		Shader& shader = World::GetInstance().GetComponent<Shader>(entity);
-		Transform& transform = World::GetInstance().GetComponent<Transform>(entity);
-		Sprite& sprite = World::GetInstance().GetComponent<Sprite>(entity);
-		Texture2D texture = World::GetInstance().GetComponent<Texture2D>(entity);
+		auto shader = World::GetInstance().GetComponent<Shader>(entity);
+		auto transform = World::GetInstance().GetComponent<Transform>(entity);
+		auto sprite = World::GetInstance().GetComponent<Sprite>(entity);
+		auto texture = World::GetInstance().GetComponent<Texture2D>(entity);
 
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
 
-		shader.Use();
+		shader->Use();
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(transform.position, 0.0f));
-		model = glm::translate(model, glm::vec3(0.5 * transform.scale.x, 0.5 * transform.scale.y, 0.0));
-		model = glm::rotate(model, glm::radians(transform.rotation), glm::vec3(0.0, 0.0, 1.0));
-		model = glm::translate(model, glm::vec3(-0.5 * transform.scale.x, -0.5 * transform.scale.y, 0.0));
+		model = glm::translate(model, glm::vec3(transform->position, 0.0f));
+		model = glm::translate(model, glm::vec3(0.5 * transform->scale.x, 0.5 * transform->scale.y, 0.0));
+		model = glm::rotate(model, glm::radians(transform->rotation), glm::vec3(0.0, 0.0, 1.0));
+		model = glm::translate(model, glm::vec3(-0.5 * transform->scale.x, -0.5 * transform->scale.y, 0.0));
 		
-		model = glm::scale(model, glm::vec3(transform.scale, 1.0f));
+		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
-		shader.SetMatrix4("model", model);
-		shader.SetVector3f("spriteColor", glm::vec3(1.0f, 0.0f, 0.0f));
-		shader.SetMatrix4("projection", projection);
-		shader.SetInteger("sprite", 0);
+		shader->SetMatrix4("model", model);
+		shader->SetVector3f("spriteColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		shader->SetMatrix4("projection", projection);
+		shader->SetInteger("sprite", 0);
 
 		glActiveTexture(GL_TEXTURE0);
-		texture.Bind();
+		texture->Bind();
 
 		glBindVertexArray(m_quadVao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

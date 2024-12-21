@@ -78,8 +78,8 @@ namespace Hori
 
 			if (CheckSphereSphereCollision(eA, eB))
 			{
-				bool aIsTrigger = colA.isTrigger;
-				bool bIsTrigger = colB.isTrigger;
+				bool aIsTrigger = colA->isTrigger;
+				bool bIsTrigger = colB->isTrigger;
 
 				if (aIsTrigger || bIsTrigger)
 				{
@@ -88,8 +88,8 @@ namespace Hori
 				else
 				{
 					ResolveSphereSphereCollision(eA, eB);
-					glm::vec2 dir = glm::normalize(world.GetComponent<Transform>(eA).position - world.GetComponent<Transform>(eB).position);
-					CollisionEvent event(eA, eB, dir * colB.radius, dir);
+					glm::vec2 dir = glm::normalize(world.GetComponent<Transform>(eA)->position - world.GetComponent<Transform>(eB)->position);
+					CollisionEvent event(eA, eB, dir * colB->radius, dir);
 					collisionEvents.push_back(event);
 				}
 			}
@@ -116,8 +116,8 @@ namespace Hori
 		const auto& colliderA = world.GetComponent<SphereCollider>(eA);
 		const auto& colliderB = world.GetComponent<SphereCollider>(eB);
 
-		float distance = glm::distance(colliderA.transform.position, colliderB.transform.position);
-		float radiusSum = colliderA.radius + colliderB.radius;
+		float distance = glm::distance(colliderA->transform.position, colliderB->transform.position);
+		float radiusSum = colliderA->radius + colliderB->radius;
 		return distance <= radiusSum;
 	}
 
@@ -125,14 +125,14 @@ namespace Hori
 	{
 		auto& world = World::GetInstance();
 
-		auto& transformA = world.GetComponent<Transform>(eA);
-		auto& transformB = world.GetComponent<Transform>(eB);
+		auto transformA = world.GetComponent<Transform>(eA);
+		auto transformB = world.GetComponent<Transform>(eB);
 
-		auto& colliderA = world.GetComponent<SphereCollider>(eA);
-		auto& colliderB = world.GetComponent<SphereCollider>(eB);
+		auto colliderA = world.GetComponent<SphereCollider>(eA);
+		auto colliderB = world.GetComponent<SphereCollider>(eB);
 
-		glm::vec2 posA = colliderA.transform.position;
-		glm::vec2 posB = colliderB.transform.position;
+		glm::vec2 posA = colliderA->transform.position;
+		glm::vec2 posB = colliderB->transform.position;
 
 		glm::vec2 delta = posA - posB;
 		float dist = glm::length(delta);
@@ -142,22 +142,22 @@ namespace Hori
 			dist = 0.0001f;
 		}
 
-		float overlap = (colliderA.radius + colliderB.radius) - dist;
+		float overlap = (colliderA->radius + colliderB->radius) - dist;
 		glm::vec2 correction = glm::normalize(delta) * overlap * 0.5f;
 
-		transformA.position += correction;
-		colliderA.transform.position += correction;
-		transformB.position -= correction;
-		colliderB.transform.position -= correction;
+		transformA->position += correction;
+		colliderA->transform.position += correction;
+		transformB->position -= correction;
+		colliderB->transform.position -= correction;
 	}
 
 	void PhysicsSystem::HandleTrigger(Entity eA, Entity eB, std::vector<TriggerEvent>& triggerEvents)
 	{
 		auto& world = World::GetInstance();
-		auto& colA = world.GetComponent<SphereCollider>(eA);
-		auto& colB = world.GetComponent<SphereCollider>(eB);
+		auto colA = world.GetComponent<SphereCollider>(eA);
+		auto colB = world.GetComponent<SphereCollider>(eB);
 
-		if (colA.isTrigger)
+		if (colA->isTrigger)
 		{
 			if (m_activeTriggers[eA].find(eB) == m_activeTriggers[eA].end())
 			{
@@ -166,7 +166,7 @@ namespace Hori
 				triggerEvents.emplace_back(eA, eB);
 			}
 		}
-		if (colB.isTrigger)
+		if (colB->isTrigger)
 		{
 			if (m_activeTriggers[eB].find(eA) == m_activeTriggers[eB].end())
 			{
@@ -192,15 +192,15 @@ namespace Hori
 	void PhysicsSystem::Move(Entity entity, float deltaTime)
 	{
 		World& world = World::GetInstance();
-		auto& objectPos = world.GetComponent<Transform>(entity).position;
-		auto& vel = world.GetComponent<VelocityComponent>(entity);
+		auto& objectPos = world.GetComponent<Transform>(entity)->position;
+		auto vel = world.GetComponent<VelocityComponent>(entity);
 
-		glm::vec2 displacement = vel.dir * vel.speed * deltaTime;
+		glm::vec2 displacement = vel->dir * vel->speed * deltaTime;
 		objectPos += displacement;
 
 		if (world.HasComponent<SphereCollider>(entity.GetID()))
 		{
-			auto& colliderPos = world.GetComponent<SphereCollider>(entity).transform.position;
+			auto& colliderPos = world.GetComponent<SphereCollider>(entity)->transform.position;
 			colliderPos += displacement;
 		}
 	}

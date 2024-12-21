@@ -54,7 +54,7 @@ namespace Hori
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		auto& input = World::GetInstance().GetSingletonComponent<InputComponent>().input;
+		auto& input = World::GetInstance().GetSingletonComponent<InputComponent>()->input;
 
 		if (key >= 0 && key < 1024)
 		{
