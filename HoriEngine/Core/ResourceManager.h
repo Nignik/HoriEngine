@@ -10,10 +10,13 @@
 #include "Texture.h"
 #include "stb_image.h"
 
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace Hori
 {
-	inline Shader LoadShaderFromFile(std::string vShaderFile, std::string fShaderFile, std::string gShaderFile = "")
+	inline Shader LoadShaderFromFile(fs::path vShaderFile, fs::path fShaderFile, fs::path gShaderFile = "")
 	{
 		std::string vertexCode;
 		std::string fragmentCode;
@@ -43,8 +46,12 @@ namespace Hori
 				geometryCode = gShaderStream.str();
 			}
 		}
-		catch (std::exception e)
+		catch (fs::filesystem_error& e)
 		{
+			std::cout << "EXCEPTION: " << e.what() << std::endl;
+			std::cout << "     path: " << e.path1() << std::endl;
+		}
+		catch (...) {
 			std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
 		}
 		const char* vShaderCode = vertexCode.c_str();
@@ -56,7 +63,7 @@ namespace Hori
 		return shader;
 	}
 
-	inline Texture2D LoadTextureFromFile(std::string file, bool alpha)
+	inline Texture2D LoadTextureFromFile(fs::path file, bool alpha)
 	{
 		Texture2D texture;
 		if (alpha)
@@ -66,7 +73,7 @@ namespace Hori
 		}
 		// load image
 		int width, height, nrChannels;
-		unsigned char* data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
+		unsigned char* data = stbi_load(file.string().c_str(), &width, &height, &nrChannels, 0);
 		// now generate texture
 		texture.Generate(width, height, data);
 		// and finally free image data
