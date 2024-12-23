@@ -27,7 +27,7 @@ namespace Hori
 		std::vector<Entity> dynamicCollidables;
 		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
 		{
-			bool hasSphere = world.HasComponent<SphereCollider>(entity.GetID());
+			bool hasSphere = world.HasComponents<SphereCollider>(entity);
 			if (!hasSphere)
 			{
 				Move(entity, deltaTime);
@@ -161,7 +161,6 @@ namespace Hori
 		{
 			if (m_activeTriggers[eA].find(eB) == m_activeTriggers[eA].end())
 			{
-				std::cout << "Triggered" << std::endl;
 				m_activeTriggers[eA].insert(eB);
 				triggerEvents.emplace_back(eA, eB);
 			}
@@ -170,7 +169,6 @@ namespace Hori
 		{
 			if (m_activeTriggers[eB].find(eA) == m_activeTriggers[eB].end())
 			{
-				std::cout << "Triggered" << std::endl;
 				m_activeTriggers[eB].insert(eA);
 				triggerEvents.emplace_back(eB, eA);
 			}
@@ -198,7 +196,7 @@ namespace Hori
 		glm::vec2 displacement = vel->dir * vel->speed * deltaTime;
 		objectPos += displacement;
 
-		if (world.HasComponent<SphereCollider>(entity.GetID()))
+		if (world.HasComponents<SphereCollider>(entity))
 		{
 			auto& colliderPos = world.GetComponent<SphereCollider>(entity)->transform.position;
 			colliderPos += displacement;
