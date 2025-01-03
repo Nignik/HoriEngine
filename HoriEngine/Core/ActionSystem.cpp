@@ -28,10 +28,10 @@ namespace Hori
 		*velocity = { {0.0f, 0.0f}, velocity->speed };
 
 		if (input[GLFW_KEY_W])
-			velocity->dir.y -= 1.0f;
+			velocity->dir.y += 1.0f;
 		
 		if (input[GLFW_KEY_S])
-			velocity->dir.y += 1.0f;
+			velocity->dir.y -= 1.0f;
 		
 		if (input[GLFW_KEY_D])
 			velocity->dir.x += 1.0f;

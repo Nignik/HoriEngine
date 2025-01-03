@@ -73,6 +73,7 @@ namespace Hori
 		}
 		// load image
 		int width, height, nrChannels;
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file.string().c_str(), &width, &height, &nrChannels, 0);
 		// now generate texture
 		texture.Generate(width, height, data);

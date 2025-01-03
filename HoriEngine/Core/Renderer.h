@@ -20,13 +20,16 @@ namespace Hori
 		void EndFrame();
 
 		GLFWwindow* GetWindow();
-		glm::vec2 GetScreenSize();
+		glm::vec2 GetWindowSize();
+		glm::vec2 GetCameraSize();
+		glm::mat4 GetProjectionMatrix();
 
 	private:
 		Renderer();
 		~Renderer();
 
-		glm::ivec2 m_screenSize;
+		glm::vec2 m_windowSize;
+		glm::vec2 m_cameraSize = {160.f, 90.f};
 
 		static GLFWwindow* m_window;
 	};

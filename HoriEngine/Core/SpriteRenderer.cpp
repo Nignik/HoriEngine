@@ -1,4 +1,5 @@
 #include "SpriteRenderer.h"
+#include "Renderer.h"
 
 #include <World.h>
 #include <iostream>
@@ -51,7 +52,7 @@ namespace Hori
 		auto sprite = World::GetInstance().GetComponent<Sprite>(entity);
 		auto texture = World::GetInstance().GetComponent<Texture2D>(entity);
 
-		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
 
 		shader->Use();
 		glm::mat4 model = glm::mat4(1.0f);

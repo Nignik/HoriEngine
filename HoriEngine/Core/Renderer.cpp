@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <cassert>
 #include <vector>
 #include <iostream>
@@ -14,7 +16,7 @@ namespace Hori
 	GLFWwindow* Renderer::m_window = nullptr;
 
 	Renderer::Renderer()
-		: m_screenSize(800, 600)
+		: m_windowSize(1280, 720)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -29,7 +31,7 @@ namespace Hori
 			throw std::runtime_error("Failed to initialize GLFW");
 		}
 
-		m_window = glfwCreateWindow(m_screenSize.x, m_screenSize.y, "Hori", nullptr, nullptr);
+		m_window = glfwCreateWindow((int)m_windowSize.x, (int)m_windowSize.y, "Hori", nullptr, nullptr);
 
 		// After glfwCreateWindow
 		if (m_window == nullptr)
@@ -51,7 +53,7 @@ namespace Hori
 			throw std::runtime_error("Failed to initialize GLAD");
 		}
 
-		glViewport(0, 0, m_screenSize.x, m_screenSize.y);
+		glViewport(0, 0, (int)m_windowSize.x, (int)m_windowSize.y);
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -95,10 +97,21 @@ namespace Hori
 		return m_window;
 	}
 
-	glm::vec2 Renderer::GetScreenSize()
+	glm::vec2 Renderer::GetWindowSize()
 	{
-		return m_screenSize;
+		return m_windowSize;
 	}
+
+	glm::vec2 Renderer::GetCameraSize()
+	{
+		return m_cameraSize;
+	}
+
+	glm::mat4 Renderer::GetProjectionMatrix()
+	{
+		return glm::ortho(-m_cameraSize.x/2, m_cameraSize.x/2, -m_cameraSize.y/2, m_cameraSize.y/2, -1.0f, 1.0f);
+	}
+
 }
 
 
