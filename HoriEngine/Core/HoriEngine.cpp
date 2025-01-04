@@ -2,6 +2,7 @@
 
 #include "PhysicsSystem.h"
 #include "SpriteRenderer.h"
+#include "DebugRendererSystem.h"
 #include "ActionSystem.h"
 
 namespace Hori
@@ -28,6 +29,7 @@ namespace Hori
 		World::GetInstance().AddSystem<PhysicsSystem>(PhysicsSystem());
 		World::GetInstance().AddSystem<SpriteRenderer>(SpriteRenderer());
 		World::GetInstance().AddSystem<ActionSystem>(ActionSystem());
+		World::GetInstance().AddSystem<DebugRendererSystem>(DebugRendererSystem());
 
 		World::GetInstance().AddSingletonComponent(InputComponent());
 	}
