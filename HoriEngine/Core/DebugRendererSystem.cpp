@@ -8,9 +8,13 @@
 
 #include <Core/Renderer.h>
 
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_opengl3_loader.h>
+#include <imgui_impl_glfw.h>
+
 namespace Hori
 {
-
 	DebugRendererSystem::DebugRendererSystem()
 		: m_shader(LoadShaderFromFile("shaders/wireframe.vs", "shaders/wireframe.fs"))
 	{
@@ -20,10 +24,18 @@ namespace Hori
 	void DebugRendererSystem::Update(float dt)
 	{
 		auto& world = World::GetInstance();
-		for (auto& entity : world.GetEntitiesWithComponents<WireframeComponent>())
-		{
-			RenderWireframe(entity);
-		}
+
+		if (m_enabled[DebugDraw::COLLIDER_WIREFRAME])
+			for (auto& entity : world.GetEntitiesWithComponents<WireframeComponent>())
+				RenderWireframe(entity);
+	}
+
+	void DebugRendererSystem::Switch(DebugDraw option)
+	{
+		if (!m_enabled.count(option))
+			m_enabled[option] = true;
+		else
+			m_enabled[option] = !m_enabled[option];
 	}
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
@@ -47,7 +59,7 @@ namespace Hori
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);
 		glBindVertexArray(wireframe->buff->vao);
-		glDrawArrays(GL_TRIANGLES, 0, wireframe->vertexCount);
+		glDrawArrays(GL_LINE_LOOP, 0, wireframe->vertexCount);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindVertexArray(0);
 	}

@@ -4,12 +4,16 @@
 #include "SpriteRenderer.h"
 #include "DebugRendererSystem.h"
 #include "ActionSystem.h"
+#include "DebugUISystem.h"
+#include "DebugUIComponents.h"
+#include "DebugRendererComponent.h"
 
 namespace Hori
 {
 	Engine::Engine()
 		: m_prevTime(std::chrono::high_resolution_clock::now())
 	{
+
 	}
 
 	Engine::~Engine()
@@ -26,17 +30,35 @@ namespace Hori
 	{
 		glfwSetKeyCallback(Renderer::GetInstance().GetWindow(), key_callback);
 
-		World::GetInstance().AddSystem<PhysicsSystem>(PhysicsSystem());
-		World::GetInstance().AddSystem<SpriteRenderer>(SpriteRenderer());
-		World::GetInstance().AddSystem<ActionSystem>(ActionSystem());
-		World::GetInstance().AddSystem<DebugRendererSystem>(DebugRendererSystem());
+		auto& world = World::GetInstance();
+		world.AddSystem<SpriteRenderer>(SpriteRenderer());
+		world.AddSystem<PhysicsSystem>(PhysicsSystem());
+		world.AddSystem<ActionSystem>(ActionSystem());
 
-		World::GetInstance().AddSingletonComponent(InputComponent());
+		world.AddSingletonComponent(InputComponent());
+	}
+
+	void Engine::InitDebugSystems()
+	{
+		auto& world = World::GetInstance();
+
+		world.AddSystem<DebugUISystem>(DebugUISystem(Renderer::GetInstance().GetWindow()));
+		world.AddSystem<DebugRendererSystem>(DebugRendererSystem());
+
+		world.AddSingletonComponent(DebugRendererComponent());
+
+		m_debugUI = world.CreateEntity();
+		ButtonComponent showColliders("Show collider wireframes", std::bind(&DebugRendererComponent::Switch, world.GetSingletonComponent<DebugRendererComponent>(), DebugDraw::COLLIDER_WIREFRAME));
+		world.AddComponents(m_debugUI, showColliders);
 	}
 
 	void Engine::Run()
 	{
 		auto currentTime = std::chrono::high_resolution_clock::now();
+
+		ImGui::CreateContext();
+		ImGui_ImplGlfw_InitForOpenGL(Renderer::GetInstance().GetWindow(), true);
+		ImGui_ImplOpenGL3_Init("#version 450");
 		
 		while (!Renderer::GetInstance().ShouldClose())
 		{
@@ -44,11 +66,23 @@ namespace Hori
 			std::chrono::duration<float> deltaTime = currentTime - m_prevTime;
 			m_prevTime = currentTime;
 
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
 			Renderer::GetInstance().StartFrame();
+
 			World::GetInstance().UpdateSystems(deltaTime.count());
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			Renderer::GetInstance().EndFrame();
 			EventManager::GetInstance().Clear();
 		}
+
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)

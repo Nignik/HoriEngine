@@ -29,7 +29,7 @@ namespace Hori
 		WireframeComponent(std::vector<float>& vertices, glm::vec3 color)
 			: buff(std::make_shared<Buffer>()),
 			color(color),
-			vertexCount(vertices.size() * 2)
+			vertexCount((int)vertices.size() / 2)
 		{
 			glCreateVertexArrays(1, &buff->vao);
 			glCreateBuffers(1, &buff->vbo);
@@ -44,12 +44,6 @@ namespace Hori
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindVertexArray(0);
 		}
-
-		/*~WireframeComponent()
-		{
-			glDeleteVertexArrays(1, &vao);
-			glDeleteBuffers(1, &vbo);
-		}*/
 
 		std::shared_ptr<Buffer> buff;
 		int vertexCount{};

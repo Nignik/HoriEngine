@@ -18,6 +18,7 @@ namespace Hori
 		static Engine& GetInstance();
 
 		void InitSystems();
+		void InitDebugSystems();
 		void Run();
 
 	private:
@@ -25,6 +26,7 @@ namespace Hori
 		~Engine();
 
 		std::chrono::steady_clock::time_point m_prevTime;
+		Entity m_debugUI{};
 
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 	};

@@ -6,11 +6,11 @@
 inline std::vector<float> generateCircleVertices(float radius, int segments)
 {
 	std::vector<float> vertices;
-	vertices.reserve((segments + 1) * 2);
-
-	for (int i = 0; i <= segments; i++)
+	vertices.reserve(segments * 2);
+	float step = (2.0f * std::numbers::pi_v<float>) / segments;
+	for (int i = 0; i < segments; i++)
 	{
-		float angle = 2.0f * std::numbers::pi_v<float> * i / segments;
+		float angle = i * step;
 		float x = radius * cos(angle);
 		float y = radius * sin(angle);
 
