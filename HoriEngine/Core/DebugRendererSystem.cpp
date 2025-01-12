@@ -21,22 +21,23 @@ namespace Hori
 
 	}
 
-	void DebugRendererSystem::Update(float dt)
-	{
-		auto& world = World::GetInstance();
-
-		if (m_enabled[DebugDraw::COLLIDER_WIREFRAME])
+	// TODO: Something wrong here for now disabled
+ 	void DebugRendererSystem::Update(float dt)
+ 	{
+ 		auto& world = World::GetInstance();
+ 
+		/*if (m_enabled[DebugDraw::COLLIDER_WIREFRAME])
 			for (auto& entity : world.GetEntitiesWithComponents<WireframeComponent>())
-				RenderWireframe(entity);
-	}
-
-	void DebugRendererSystem::Switch(DebugDraw option)
-	{
-		if (!m_enabled.count(option))
-			m_enabled[option] = true;
-		else
-			m_enabled[option] = !m_enabled[option];
-	}
+				RenderWireframe(entity);*/
+ 	}
+ 
+ 	/*void DebugRendererSystem::Switch(DebugDraw option)
+ 	{
+ 		if (!m_enabled.count(option))
+ 			m_enabled[option] = true;
+ 		else
+ 			m_enabled[option] = !m_enabled[option];
+ 	}*/
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
 	{
