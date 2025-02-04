@@ -34,8 +34,6 @@ namespace Hori
 		world.AddSystem<SpriteRenderer>(SpriteRenderer());
 		world.AddSystem<PhysicsSystem>(PhysicsSystem());
 		world.AddSystem<ActionSystem>(ActionSystem());
-
-		world.AddSingletonComponent(InputComponent());
 	}
 
 	void Engine::InitDebugSystems()
@@ -50,6 +48,13 @@ namespace Hori
 		m_debugUI = world.CreateEntity();
 		ButtonComponent showColliders("Show collider wireframes", std::bind(&DebugRendererComponent::Switch, world.GetSingletonComponent<DebugRendererComponent>(), DebugDraw::COLLIDER_WIREFRAME));
 		world.AddComponents(m_debugUI, showColliders);
+	}
+
+	void Engine::InitSingletonComponents()
+	{
+		auto& world = World::GetInstance();
+		world.AddSingletonComponent(InputComponent());
+		world.AddSingletonComponent(QuadTreeComponent());
 	}
 
 	void Engine::Run()

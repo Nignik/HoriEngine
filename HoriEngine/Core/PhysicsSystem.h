@@ -5,6 +5,7 @@
 #include <Collider.h>
 #include <unordered_set>
 #include <unordered_map>
+#include "QuadTreeComponent.h"
 
 namespace Hori
 {
@@ -16,6 +17,7 @@ namespace Hori
 		void Update(float deltaTime) override;
 
 	private:
+		std::shared_ptr<QuadTreeNode> m_quadTree;
 		std::unordered_map<Entity, std::unordered_set<Entity>> m_activeTriggers{};
 		std::unordered_map<Entity, std::unordered_set<Entity>> m_newTriggers{};
 

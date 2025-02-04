@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glad/glad.h>
-#include <Component.h>
 #include <memory>
 
 #include "Transform.h"

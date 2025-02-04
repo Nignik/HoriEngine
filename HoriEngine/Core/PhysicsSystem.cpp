@@ -3,10 +3,13 @@
 #include "Collider.h"
 #include "VelocityComponent.h"
 #include "EventManager.h"
+#include "Renderer.h"
 
 #include <World.h>
 #include <iostream>
 #include <glm/glm.hpp>
+
+#include "Rect.h"
 
 namespace Hori
 {
@@ -38,9 +41,31 @@ namespace Hori
 			}
 		}
 
+		for (auto& e : dynamicCollidables)
+		{
+			Move(e, deltaTime);
+		}
+
+		auto cameraSize = Renderer::GetInstance().GetCameraSize();
+		std::vector<CollisionPair> collisionCandidates;
+		{
+			auto colliders = world.GetEntitiesWithComponents<SphereCollider>();
+			m_quadTree = std::make_shared<QuadTreeNode>(colliders, Rect(-1000, -1000, 2000, 2000));
+			for (size_t i = 0; i < colliders.size(); ++i)
+			{
+				Entity eA = colliders[i];
+				auto others = m_quadTree->GetNeighbours(eA);
+				for (auto& eB : others)
+				{
+					if (eB.GetID() > eA.GetID())
+						collisionCandidates.push_back({ eA, eB });
+				}
+			}
+		}
+
 		// Broad-phase collision detection
 		// For now N^2 brute force, but can be optimized
-		std::vector<CollisionPair> collisionCandidates;
+		/*std::vector<CollisionPair> collisionCandidates;
 		{
 			auto colliders = world.GetEntitiesWithComponents<SphereCollider>();
 			for (size_t i = 0; i < colliders.size(); ++i)
@@ -58,21 +83,13 @@ namespace Hori
 					collisionCandidates.push_back({ eA, eB });
 				}
 			}
-		}
+		}*/
 
 		std::vector<CollisionEvent> collisionEvents;
 		std::vector<TriggerEvent> triggerEvents;
 
-		for (auto& e : dynamicCollidables)
+		for (auto& [eA, eB] : collisionCandidates)
 		{
-			Move(e, deltaTime);
-		}
-
-		for (auto& pair : collisionCandidates)
-		{
-			Entity eA = pair.entityA;
-			Entity eB = pair.entityB;
-
 			const auto& colA = world.GetComponent<SphereCollider>(eA);
 			const auto& colB = world.GetComponent<SphereCollider>(eB);
 

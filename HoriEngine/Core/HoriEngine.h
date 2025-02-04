@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Shader.h"
 #include "InputComponent.h"
+#include "QuadTreeComponent.h"
 
 namespace Hori
 {
@@ -19,6 +20,7 @@ namespace Hori
 
 		void InitSystems();
 		void InitDebugSystems();
+		void InitSingletonComponents();
 		void Run();
 
 	private:
