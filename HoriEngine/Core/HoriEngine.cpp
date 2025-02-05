@@ -7,6 +7,8 @@
 #include "DebugUISystem.h"
 #include "DebugUIComponents.h"
 #include "DebugRendererComponent.h"
+#include "FPSSystem.h"
+#include "FPSComponent.h"
 
 namespace Hori
 {
@@ -31,17 +33,18 @@ namespace Hori
 		glfwSetKeyCallback(Renderer::GetInstance().GetWindow(), key_callback);
 
 		auto& world = World::GetInstance();
-		world.AddSystem<SpriteRenderer>(SpriteRenderer());
-		world.AddSystem<PhysicsSystem>(PhysicsSystem());
-		world.AddSystem<ActionSystem>(ActionSystem());
+		world.AddSystem<SpriteRenderer>();
+		world.AddSystem<PhysicsSystem>();
+		world.AddSystem<ActionSystem>();
+		world.AddSystem<FPSSystem>();
 	}
 
 	void Engine::InitDebugSystems()
 	{
 		auto& world = World::GetInstance();
 
-		world.AddSystem<DebugUISystem>(DebugUISystem(Renderer::GetInstance().GetWindow()));
-		world.AddSystem<DebugRendererSystem>(DebugRendererSystem());
+		world.AddSystem<DebugUISystem>(Renderer::GetInstance().GetWindow());
+		world.AddSystem<DebugRendererSystem>();
 
 		world.AddSingletonComponent(DebugRendererComponent());
 
@@ -55,6 +58,7 @@ namespace Hori
 		auto& world = World::GetInstance();
 		world.AddSingletonComponent(InputComponent());
 		world.AddSingletonComponent(QuadTreeComponent());
+		world.AddSingletonComponent(FPSComponent());
 	}
 
 	void Engine::Run()
@@ -64,7 +68,7 @@ namespace Hori
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(Renderer::GetInstance().GetWindow(), true);
 		ImGui_ImplOpenGL3_Init("#version 450");
-		
+
 		while (!Renderer::GetInstance().ShouldClose())
 		{
 			currentTime = std::chrono::high_resolution_clock::now();

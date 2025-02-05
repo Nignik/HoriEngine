@@ -1,6 +1,7 @@
 #include "DebugRendererSystem.h"
 
 #include "Transform.h"
+#include "DebugRendererComponent.h"
 
 #include <iostream>
 #include <glm/glm.hpp>
@@ -21,23 +22,15 @@ namespace Hori
 
 	}
 
-	// TODO: Something wrong here for now disabled
  	void DebugRendererSystem::Update(float dt)
  	{
  		auto& world = World::GetInstance();
- 
-		/*if (m_enabled[DebugDraw::COLLIDER_WIREFRAME])
+		
+		auto& enabled = world.GetSingletonComponent<DebugRendererComponent>()->enabled;
+		if (enabled[DebugDraw::COLLIDER_WIREFRAME])
 			for (auto& entity : world.GetEntitiesWithComponents<WireframeComponent>())
-				RenderWireframe(entity);*/
+				RenderWireframe(entity);
  	}
- 
- 	/*void DebugRendererSystem::Switch(DebugDraw option)
- 	{
- 		if (!m_enabled.count(option))
- 			m_enabled[option] = true;
- 		else
- 			m_enabled[option] = !m_enabled[option];
- 	}*/
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
 	{
@@ -45,14 +38,13 @@ namespace Hori
 		auto wireframe = World::GetInstance().GetComponent<WireframeComponent>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
-
-		m_shader.Use();
+		
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(transform->position, 0.0f));
 		model = glm::rotate(model, glm::radians(transform->rotation), glm::vec3(0.0, 0.0, 1.0));
-
 		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
+		m_shader.Use();
 		m_shader.SetMatrix4("model", model);
 		m_shader.SetMatrix4("projection", projection);
 		m_shader.SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
