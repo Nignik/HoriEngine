@@ -6,6 +6,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
 
 add_library(HoriEngine STATIC ${SOURCES} ${HEADERS})
 
@@ -34,7 +35,7 @@ install(
     DESTINATION include/Core FILES_MATCHING PATTERN "*.h"
 )
 
-target_link_libraries(HoriEngine PUBLIC glfw glad::glad glm::glm imgui::imgui HECS::HECS)
+target_link_libraries(HoriEngine PUBLIC glfw glad::glad glm::glm imgui::imgui HECS::HECS Freetype::Freetype)
 
 add_custom_command(
     TARGET HoriEngine POST_BUILD

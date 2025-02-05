@@ -55,9 +55,10 @@ namespace Hori
 
 		glViewport(0, 0, (int)m_windowSize.x, (int)m_windowSize.y);
 		glEnable(GL_BLEND);
-		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glDisable(GL_DEPTH_TEST);
 	}
 
 	Renderer::~Renderer()

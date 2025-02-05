@@ -9,6 +9,7 @@
 #include "DebugRendererComponent.h"
 #include "FPSSystem.h"
 #include "FPSComponent.h"
+#include "TextRendererSystem.h"
 
 namespace Hori
 {
@@ -37,6 +38,7 @@ namespace Hori
 		world.AddSystem<PhysicsSystem>();
 		world.AddSystem<ActionSystem>();
 		world.AddSystem<FPSSystem>();
+		world.AddSystem<TextRendererSystem>();
 	}
 
 	void Engine::InitDebugSystems()
