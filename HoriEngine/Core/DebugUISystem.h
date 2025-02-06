@@ -20,6 +20,7 @@ namespace Hori
 		void Update(float dt) override;
 
 	private:
-
+		void RenderButton(Entity entity);
+		void RenderFileBrowser(Entity entity);
 	};
 }
