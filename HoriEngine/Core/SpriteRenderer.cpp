@@ -9,6 +9,7 @@ namespace Hori
 {
 
 	SpriteRenderer::SpriteRenderer()
+		: m_quad(std::make_shared<OpenGLBuffer>())
 	{
 		std::vector<float> vertices = {
 			// pos                // tex
@@ -21,13 +22,12 @@ namespace Hori
 			 0.5f, -0.5f,  1.0f, 0.0f
 		};
 
-		GLuint vbo;
-		glGenVertexArrays(1, &m_quadVao);
-		glGenBuffers(1, &vbo);
+		glGenVertexArrays(1, &m_quad->vao);
+		glGenBuffers(1, &m_quad->vbo);
 
-		glBindVertexArray(m_quadVao);
+		glBindVertexArray(m_quad->vao);
 
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, m_quad->vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
@@ -69,7 +69,7 @@ namespace Hori
 		glActiveTexture(GL_TEXTURE0);
 		texture->Bind();
 
-		glBindVertexArray(m_quadVao);
+		glBindVertexArray(m_quad->vao);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	}

@@ -60,7 +60,6 @@ namespace Hori
 		auto& world = World::GetInstance();
 		world.AddSingletonComponent(InputComponent());
 		world.AddSingletonComponent(QuadTreeComponent());
-		world.AddSingletonComponent(FPSComponent());
 	}
 
 	void Engine::Run()

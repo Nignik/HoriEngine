@@ -5,6 +5,7 @@
 
 #include "Sprite.h"
 #include "Texture.h"
+#include "OpenGLBuffer.h"
 
 
 namespace Hori
@@ -19,6 +20,6 @@ namespace Hori
 	private:
 		void DrawSprite(const Entity& entity);
 
-		GLuint m_quadVao;
+		std::shared_ptr<OpenGLBuffer> m_quad;
 	};
 }
