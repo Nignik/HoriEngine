@@ -95,39 +95,38 @@ namespace Hori
 		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
 		if (ImGui::Begin("yaml inspector"))
 		{
-			if (yamlInspector->root.has_value())
+			if (yamlInspector->root != nullptr)
 			{
 				int idx = 0;
-				RenderYamlInspectorNode(yamlInspector->root.value(), idx);
+				RenderYamlInspectorNode(yamlInspector->root, idx);
 			}
 		}
 		ImGui::End();
 	}
 
-	void DebugUISystem::RenderYamlInspectorNode(YamlInspectorNode& node, int& idx)
+	void DebugUISystem::RenderYamlInspectorNode(std::shared_ptr<YamlInspectorNode> node, int& idx)
 	{
 		ImGui::PushID(idx++);
 
-		if (node.node.IsScalar())
+		if (node->node.IsScalar())
 		{
-			//ImGui::InputText(node.label.c_str(), &node.node.as<std::string>());
-			ImGui::Text("%s: %s", node.label.c_str(), node.node.as<std::string>().c_str());
+			ImGui::InputText(node->label.c_str(), &node->inputBuffer, ImGuiInputTextFlags_CallbackEdit, YamlInspectorNode::InputTextCallback, static_cast<void*>(node.get()));
 			ImGui::PopID();
 			return;
 		}
 
-		if (ImGui::TreeNode(node.label.c_str()))
+		if (ImGui::TreeNode(node->label.c_str()))
 		{
-			if (node.node.IsMap())
+			if (node->node.IsMap())
 			{
-				for (auto& child : node.children)
+				for (auto& child : node->children)
 				{
 					RenderYamlInspectorNode(child, idx);
 				}
 			}
-			else if (node.node.IsSequence())
+			else if (node->node.IsSequence())
 			{
-				for (auto& child : node.children)
+				for (auto& child : node->children)
 				{
 					RenderYamlInspectorNode(child, idx);
 				}
