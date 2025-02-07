@@ -25,6 +25,6 @@ namespace Hori
 		void RenderButton(Entity entity);
 		void RenderFileBrowser(Entity entity);
 		void RenderYamlInspector(Entity entity);
-		void RenderYamlInspectorNode(const YAML::Node& node, std::string const& label, int& idx);
+		void RenderYamlInspectorNode(YamlInspectorNode& node, int& idx);
 	};
 }

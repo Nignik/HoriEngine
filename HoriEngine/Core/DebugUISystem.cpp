@@ -3,6 +3,7 @@
 
 #include <imgui.h>
 #include <EventManager.h>
+#include <imgui_stdlib.h>
 
 namespace Hori
 {
@@ -90,43 +91,45 @@ namespace Hori
 	void DebugUISystem::RenderYamlInspector(Entity entity)
 	{
 		auto& world = World::GetInstance();
-		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
 
+		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
 		if (ImGui::Begin("yaml inspector"))
 		{
-			int idx = 0;
-			RenderYamlInspectorNode(yamlInspector->root, yamlInspector->label, idx);
+			if (yamlInspector->root.has_value())
+			{
+				int idx = 0;
+				RenderYamlInspectorNode(yamlInspector->root.value(), idx);
+			}
 		}
 		ImGui::End();
 	}
 
-	void DebugUISystem::RenderYamlInspectorNode(const YAML::Node& node, const std::string& label, int& idx)
+	void DebugUISystem::RenderYamlInspectorNode(YamlInspectorNode& node, int& idx)
 	{
 		ImGui::PushID(idx++);
 
-		if (node.IsScalar())
+		if (node.node.IsScalar())
 		{
-			ImGui::Text("%s: %s", label.c_str(), node.as<std::string>().c_str());
+			//ImGui::InputText(node.label.c_str(), &node.node.as<std::string>());
+			ImGui::Text("%s: %s", node.label.c_str(), node.node.as<std::string>().c_str());
 			ImGui::PopID();
 			return;
 		}
 
-		if (ImGui::TreeNode(label.c_str()))
+		if (ImGui::TreeNode(node.label.c_str()))
 		{
-			if (node.IsMap())
+			if (node.node.IsMap())
 			{
-				for (auto const& kv : node)
+				for (auto& child : node.children)
 				{
-					auto childLabel = kv.first.as<std::string>();
-					RenderYamlInspectorNode(kv.second, childLabel, idx);
+					RenderYamlInspectorNode(child, idx);
 				}
 			}
-			else if (node.IsSequence())
+			else if (node.node.IsSequence())
 			{
-				for (std::size_t i = 0; i < node.size(); ++i)
+				for (auto& child : node.children)
 				{
-					auto itemLabel = "[" + std::to_string(i) + "]";
-					RenderYamlInspectorNode(node[i], itemLabel, idx);
+					RenderYamlInspectorNode(child, idx);
 				}
 			}
 
