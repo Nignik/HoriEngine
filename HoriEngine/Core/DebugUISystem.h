@@ -9,6 +9,8 @@
 #include <imgui_impl_opengl3_loader.h>
 #include <imgui_impl_glfw.h>
 
+#include "YamlInspectorComponent.h"
+
 namespace Hori
 {
 	class DebugUISystem : public System
@@ -22,5 +24,7 @@ namespace Hori
 	private:
 		void RenderButton(Entity entity);
 		void RenderFileBrowser(Entity entity);
+		void RenderYamlInspector(Entity entity);
+		void RenderYamlInspectorNode(const YAML::Node& node, std::string const& label, int& idx);
 	};
 }

@@ -29,6 +29,11 @@ namespace Hori
 		{
 			RenderFileBrowser(entity);
 		}
+
+		for (auto entity : world.GetEntitiesWithComponents<YamlInspectorComponent>())
+		{
+			RenderYamlInspector(entity);
+		}
 	}
 
 	void DebugUISystem::RenderButton(Entity entity)
@@ -82,4 +87,52 @@ namespace Hori
 		ImGui::End();
 	}
 
+	void DebugUISystem::RenderYamlInspector(Entity entity)
+	{
+		auto& world = World::GetInstance();
+		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
+
+		if (ImGui::Begin("yaml inspector"))
+		{
+			int idx = 0;
+			RenderYamlInspectorNode(yamlInspector->root, yamlInspector->label, idx);
+		}
+		ImGui::End();
+	}
+
+	void DebugUISystem::RenderYamlInspectorNode(const YAML::Node& node, const std::string& label, int& idx)
+	{
+		ImGui::PushID(idx++);
+
+		if (node.IsScalar())
+		{
+			ImGui::Text("%s: %s", label.c_str(), node.as<std::string>().c_str());
+			ImGui::PopID();
+			return;
+		}
+
+		if (ImGui::TreeNode(label.c_str()))
+		{
+			if (node.IsMap())
+			{
+				for (auto const& kv : node)
+				{
+					auto childLabel = kv.first.as<std::string>();
+					RenderYamlInspectorNode(kv.second, childLabel, idx);
+				}
+			}
+			else if (node.IsSequence())
+			{
+				for (std::size_t i = 0; i < node.size(); ++i)
+				{
+					auto itemLabel = "[" + std::to_string(i) + "]";
+					RenderYamlInspectorNode(node[i], itemLabel, idx);
+				}
+			}
+
+			ImGui::TreePop();
+		}
+
+		ImGui::PopID();
+	}
 }
