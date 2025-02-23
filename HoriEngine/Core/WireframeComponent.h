@@ -8,6 +8,7 @@
 
 #include "ResourceManager.h"
 #include "OpenGLBuffer.h"
+#include "Ecs.h"
 
 namespace Hori
 {

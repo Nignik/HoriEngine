@@ -3,6 +3,7 @@
 #include <System.h>
 
 #include <Entity.h>
+#include "Ecs.h"
 
 namespace Hori
 {

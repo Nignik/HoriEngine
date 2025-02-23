@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include "QuadTreeComponent.h"
+#include "Ecs.h"
 
 namespace Hori
 {

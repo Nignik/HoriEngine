@@ -30,7 +30,7 @@ namespace Hori
 
 	void TextRendererSystem::Update(float dt)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		for (auto& entity : world.GetEntitiesWithComponents<TextComponent>())
 		{
@@ -115,7 +115,7 @@ namespace Hori
 
 	void TextRendererSystem::RenderText(Entity entity)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		auto text = world.GetComponent<TextComponent>(entity);
 		auto transform = world.GetComponent<Transform>(entity);

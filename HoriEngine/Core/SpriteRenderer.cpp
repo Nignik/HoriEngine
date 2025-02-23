@@ -39,7 +39,7 @@ namespace Hori
 
 	void SpriteRenderer::Update(float deltaTime)
 	{
-		for (const auto& entity : World::GetInstance().GetEntitiesWithComponents<Sprite>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWithComponents<Sprite>())
 		{
 			DrawSprite(entity);
 		}
@@ -47,10 +47,10 @@ namespace Hori
 
 	void SpriteRenderer::DrawSprite(const Entity& entity)
 	{
-		auto shader = World::GetInstance().GetComponent<Shader>(entity);
-		auto transform = World::GetInstance().GetComponent<Transform>(entity);
-		auto sprite = World::GetInstance().GetComponent<Sprite>(entity);
-		auto texture = World::GetInstance().GetComponent<Texture2D>(entity);
+		auto shader = Ecs::GetInstance().GetComponent<Shader>(entity);
+		auto transform = Ecs::GetInstance().GetComponent<Transform>(entity);
+		auto sprite = Ecs::GetInstance().GetComponent<Sprite>(entity);
+		auto texture = Ecs::GetInstance().GetComponent<Texture2D>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
 

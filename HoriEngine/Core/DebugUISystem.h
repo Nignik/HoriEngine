@@ -10,6 +10,7 @@
 #include <imgui_impl_glfw.h>
 
 #include "YamlInspectorComponent.h"
+#include "Ecs.h"
 
 namespace Hori
 {

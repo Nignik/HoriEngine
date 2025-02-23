@@ -7,6 +7,7 @@
 
 #include "Transform.h"
 #include "EventManager.h"
+#include "Ecs.h"
 
 namespace Hori
 {

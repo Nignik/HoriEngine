@@ -20,7 +20,7 @@ namespace Hori
 
 	void DebugUISystem::Update(float dt)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 		for (auto entity : world.GetEntitiesWithComponents<ButtonComponent>())
 		{
 			RenderButton(entity);
@@ -39,7 +39,7 @@ namespace Hori
 
 	void DebugUISystem::RenderButton(Entity entity)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		auto button = world.GetComponent<ButtonComponent>(entity);
 		if (ImGui::Button((button->label).c_str()))
@@ -50,7 +50,7 @@ namespace Hori
 
 	void DebugUISystem::RenderFileBrowser(Entity entity)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		auto fileBrowser = world.GetComponent<FileBrowserComponent>(entity);
 		if (ImGui::Begin(fileBrowser->label.c_str()))
@@ -90,7 +90,7 @@ namespace Hori
 
 	void DebugUISystem::RenderYamlInspector(Entity entity)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
 		if (ImGui::Begin("yaml inspector"))

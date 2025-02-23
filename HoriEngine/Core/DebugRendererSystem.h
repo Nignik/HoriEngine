@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "WireframeComponent.h"
+#include "Ecs.h"
 
 namespace Hori
 {

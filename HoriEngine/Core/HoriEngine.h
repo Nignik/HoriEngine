@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "InputComponent.h"
 #include "QuadTreeComponent.h"
+#include "Ecs.h"
 
 namespace Hori
 {

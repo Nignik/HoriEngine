@@ -8,6 +8,7 @@
 
 #include "Shader.h"
 #include "OpenGLBuffer.h"
+#include "Ecs.h"
 
 namespace Hori
 {

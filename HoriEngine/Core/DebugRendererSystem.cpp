@@ -24,7 +24,7 @@ namespace Hori
 
  	void DebugRendererSystem::Update(float dt)
  	{
- 		auto& world = World::GetInstance();
+ 		auto& world = Ecs::GetInstance();
 		
 		auto& enabled = world.GetSingletonComponent<DebugRendererComponent>()->enabled;
 		if (enabled[DebugDraw::COLLIDER_WIREFRAME])
@@ -34,8 +34,8 @@ namespace Hori
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
 	{
-		auto transform = World::GetInstance().GetComponent<Transform>(entity);
-		auto wireframe = World::GetInstance().GetComponent<WireframeComponent>(entity);
+		auto transform = Ecs::GetInstance().GetComponent<Transform>(entity);
+		auto wireframe = Ecs::GetInstance().GetComponent<WireframeComponent>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
 		

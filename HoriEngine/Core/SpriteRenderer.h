@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "Texture.h"
 #include "OpenGLBuffer.h"
+#include "Ecs.h"
 
 
 namespace Hori

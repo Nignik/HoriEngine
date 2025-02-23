@@ -1,5 +1,6 @@
 ﻿#include "HoriEngine.h"
 
+#include "Ecs.h"
 #include "PhysicsSystem.h"
 #include "SpriteRenderer.h"
 #include "DebugRendererSystem.h"
@@ -33,7 +34,7 @@ namespace Hori
 	{
 		glfwSetKeyCallback(Renderer::GetInstance().GetWindow(), key_callback);
 
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 		world.AddSystem<SpriteRenderer>();
 		world.AddSystem<PhysicsSystem>();
 		world.AddSystem<ActionSystem>();
@@ -43,7 +44,7 @@ namespace Hori
 
 	void Engine::InitDebugSystems()
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		world.AddSystem<DebugUISystem>(Renderer::GetInstance().GetWindow());
 		world.AddSystem<DebugRendererSystem>();
@@ -57,7 +58,7 @@ namespace Hori
 
 	void Engine::InitSingletonComponents()
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 		world.AddSingletonComponent(InputComponent());
 		world.AddSingletonComponent(QuadTreeComponent());
 	}
@@ -82,7 +83,7 @@ namespace Hori
 
 			Renderer::GetInstance().StartFrame();
 
-			World::GetInstance().UpdateSystems(deltaTime.count());
+			Ecs::GetInstance().UpdateSystems(deltaTime.count());
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -100,7 +101,7 @@ namespace Hori
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		auto& input = World::GetInstance().GetSingletonComponent<InputComponent>()->input;
+		auto& input = Ecs::GetInstance().GetSingletonComponent<InputComponent>()->input;
 
 		if (key >= 0 && key < 1024)
 		{

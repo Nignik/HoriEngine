@@ -22,7 +22,7 @@ namespace Hori
 			objects = nodeObjects;
 			for (auto& obj : objects)
 			{
-				positions[obj] = World::GetInstance().GetComponent<SphereCollider>(obj)->transform.position;
+				positions[obj] = Ecs::GetInstance().GetComponent<SphereCollider>(obj)->transform.position;
 			}
 
 			if (nodeObjects.size() > maxObjects && level < maxLevel)
@@ -42,7 +42,7 @@ namespace Hori
 			Rect seRect{ bounds.x + halfWidth, bounds.y + halfHeight, halfWidth, halfHeight };
 
 			std::vector<Entity> nwObjects, neObjects, swObjects, seObjects;
-			auto& world = World::GetInstance();
+			auto& world = Ecs::GetInstance();
 			for (auto& object : objects)
 			{
 				auto position = world.GetComponent<Transform>(object)->position;
@@ -72,7 +72,7 @@ namespace Hori
 			if (!bounds.Intersects(range))
 				return found;
 
-			auto& world = World::GetInstance();
+			auto& world = Ecs::GetInstance();
 			for (auto& obj : objects)
 			{
 				auto pos = positions[obj];
@@ -108,7 +108,7 @@ namespace Hori
 
 		std::vector<Entity> GetNeighbours(Entity entity)
 		{
-			auto& world = World::GetInstance();
+			auto& world = Ecs::GetInstance();
 
 			auto position = world.GetComponent<SphereCollider>(entity)->transform.position;
 			auto radius = world.GetComponent<SphereCollider>(entity)->radius;

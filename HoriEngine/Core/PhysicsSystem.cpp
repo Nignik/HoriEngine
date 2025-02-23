@@ -15,8 +15,8 @@ namespace Hori
 {
 	struct CollisionPair
 	{
-		Entity entityA;
-		Entity entityB;
+		Entity entityA{};
+		Entity entityB{};
 	};
 
 	PhysicsSystem::PhysicsSystem()
@@ -25,7 +25,7 @@ namespace Hori
 
 	void PhysicsSystem::Update(float deltaTime)
 	{
-		World& world = World::GetInstance();
+		World& world = Ecs::GetInstance();
 
 		std::vector<Entity> dynamicCollidables;
 		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
@@ -129,7 +129,7 @@ namespace Hori
 
 	bool PhysicsSystem::CheckSphereSphereCollision(Entity eA, Entity eB)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 		const auto& colliderA = world.GetComponent<SphereCollider>(eA);
 		const auto& colliderB = world.GetComponent<SphereCollider>(eB);
 
@@ -140,7 +140,7 @@ namespace Hori
 
 	void PhysicsSystem::ResolveSphereSphereCollision(Entity eA, Entity eB)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 
 		auto transformA = world.GetComponent<Transform>(eA);
 		auto transformB = world.GetComponent<Transform>(eB);
@@ -170,7 +170,7 @@ namespace Hori
 
 	void PhysicsSystem::HandleTrigger(Entity eA, Entity eB, std::vector<TriggerEvent>& triggerEvents)
 	{
-		auto& world = World::GetInstance();
+		auto& world = Ecs::GetInstance();
 		auto colA = world.GetComponent<SphereCollider>(eA);
 		auto colB = world.GetComponent<SphereCollider>(eB);
 
@@ -206,7 +206,7 @@ namespace Hori
 
 	void PhysicsSystem::Move(Entity entity, float deltaTime)
 	{
-		World& world = World::GetInstance();
+		World& world = Ecs::GetInstance();
 		auto& objectPos = world.GetComponent<Transform>(entity)->position;
 		auto vel = world.GetComponent<VelocityComponent>(entity);
 
