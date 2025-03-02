@@ -16,7 +16,7 @@ namespace Hori
 	{
 		auto& input = Ecs::GetInstance().GetSingletonComponent<InputComponent>()->input;
 
-		for (const auto& entity : Ecs::GetInstance().GetEntitiesWithComponents<Controller>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<Controller>())
 		{
 			Move(entity, input);
 		}

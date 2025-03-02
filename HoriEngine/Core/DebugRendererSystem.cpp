@@ -2,12 +2,11 @@
 
 #include "Transform.h"
 #include "DebugRendererComponent.h"
+#include "Renderer.h"
 
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <Core/Renderer.h>
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -28,7 +27,7 @@ namespace Hori
 		
 		auto& enabled = world.GetSingletonComponent<DebugRendererComponent>()->enabled;
 		if (enabled[DebugDraw::COLLIDER_WIREFRAME])
-			for (auto& entity : world.GetEntitiesWithComponents<WireframeComponent>())
+			for (auto& entity : world.GetEntitiesWith<WireframeComponent>())
 				RenderWireframe(entity);
  	}
 

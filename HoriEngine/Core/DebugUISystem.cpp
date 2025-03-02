@@ -21,17 +21,17 @@ namespace Hori
 	void DebugUISystem::Update(float dt)
 	{
 		auto& world = Ecs::GetInstance();
-		for (auto entity : world.GetEntitiesWithComponents<ButtonComponent>())
+		for (auto entity : world.GetEntitiesWith<ButtonComponent>())
 		{
 			RenderButton(entity);
 		}
 
-		for (auto entity : world.GetEntitiesWithComponents<FileBrowserComponent>())
+		for (auto entity : world.GetEntitiesWith<FileBrowserComponent>())
 		{
 			RenderFileBrowser(entity);
 		}
 
-		for (auto entity : world.GetEntitiesWithComponents<YamlInspectorComponent>())
+		for (auto entity : world.GetEntitiesWith<YamlInspectorComponent>())
 		{
 			RenderYamlInspector(entity);
 		}

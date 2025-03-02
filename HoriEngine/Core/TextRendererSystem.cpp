@@ -32,7 +32,7 @@ namespace Hori
 	{
 		auto& world = Ecs::GetInstance();
 
-		for (auto& entity : world.GetEntitiesWithComponents<TextComponent>())
+		for (auto& entity : world.GetEntitiesWith<TextComponent>())
 		{
 			RenderText(entity);
 		}

@@ -53,7 +53,7 @@ namespace Hori
 
 		m_debugUI = world.CreateEntity();
 		ButtonComponent showColliders("Show collider wireframes", std::bind(&DebugRendererComponent::Switch, world.GetSingletonComponent<DebugRendererComponent>(), DebugDraw::COLLIDER_WIREFRAME));
-		world.AddComponents(m_debugUI, showColliders);
+		world.AddComponents(m_debugUI, std::move(showColliders));
 	}
 
 	void Engine::InitSingletonComponents()

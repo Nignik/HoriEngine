@@ -28,7 +28,7 @@ namespace Hori
 		World& world = Ecs::GetInstance();
 
 		std::vector<Entity> dynamicCollidables;
-		for (auto entity : world.GetEntitiesWithComponents<VelocityComponent>())
+		for (auto entity : world.GetEntitiesWith<VelocityComponent>())
 		{
 			bool hasSphere = world.HasComponents<SphereCollider>(entity);
 			if (!hasSphere)
@@ -49,7 +49,7 @@ namespace Hori
 		auto cameraSize = Renderer::GetInstance().GetCameraSize();
 		std::vector<CollisionPair> collisionCandidates;
 		{
-			auto colliders = world.GetEntitiesWithComponents<SphereCollider>();
+			auto colliders = world.GetEntitiesWith<SphereCollider>();
 			m_quadTree = std::make_shared<QuadTreeNode>(colliders, Rect(-1000, -1000, 2000, 2000));
 			for (size_t i = 0; i < colliders.size(); ++i)
 			{
@@ -67,7 +67,7 @@ namespace Hori
 		// For now N^2 brute force, but can be optimized
 		/*std::vector<CollisionPair> collisionCandidates;
 		{
-			auto colliders = world.GetEntitiesWithComponents<SphereCollider>();
+			auto colliders = world.GetEntitiesWith<SphereCollider>();
 			for (size_t i = 0; i < colliders.size(); ++i)
 			{
 				for (size_t j = i + 1; j < colliders.size(); ++j)

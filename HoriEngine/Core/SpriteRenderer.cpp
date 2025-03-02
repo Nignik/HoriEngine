@@ -39,7 +39,7 @@ namespace Hori
 
 	void SpriteRenderer::Update(float deltaTime)
 	{
-		for (const auto& entity : Ecs::GetInstance().GetEntitiesWithComponents<Sprite>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<Sprite>())
 		{
 			DrawSprite(entity);
 		}
