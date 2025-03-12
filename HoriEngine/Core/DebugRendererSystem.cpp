@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "DebugRendererComponent.h"
 #include "Renderer.h"
+#include "ResourceManager.h"
 
 #include <iostream>
 #include <glm/glm.hpp>
@@ -16,9 +17,10 @@
 namespace Hori
 {
 	DebugRendererSystem::DebugRendererSystem()
-		: m_shader(LoadShaderFromFile("shaders/wireframe.vs", "shaders/wireframe.fs"))
 	{
-
+		auto& resourceMng = ResourceManager::GetInstance();
+		auto handle = resourceMng.Load<Shader>(std::filesystem::path("shaders/wireframe"));
+		m_shader = resourceMng.Get(handle);
 	}
 
  	void DebugRendererSystem::Update(float dt)
@@ -27,8 +29,12 @@ namespace Hori
 		
 		auto& enabled = world.GetSingletonComponent<DebugRendererComponent>()->enabled;
 		if (enabled[DebugDraw::COLLIDER_WIREFRAME])
+		{
 			for (auto& entity : world.GetEntitiesWith<WireframeComponent>())
+			{
 				RenderWireframe(entity);
+			}
+		}
  	}
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
@@ -43,10 +49,10 @@ namespace Hori
 		model = glm::rotate(model, glm::radians(transform->rotation), glm::vec3(0.0, 0.0, 1.0));
 		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
-		m_shader.Use();
-		m_shader.SetMatrix4("model", model);
-		m_shader.SetMatrix4("projection", projection);
-		m_shader.SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
+		m_shader->Use();
+		m_shader->SetMatrix4("model", model);
+		m_shader->SetMatrix4("projection", projection);
+		m_shader->SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);

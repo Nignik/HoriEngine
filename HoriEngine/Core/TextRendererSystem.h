@@ -28,7 +28,7 @@ namespace Hori
 
 	private:
 		std::unordered_map<GLchar, Character> Characters{};
-		Shader m_shader;
+		std::shared_ptr<Shader> m_shader{};
 		std::shared_ptr<OpenGLBuffer> m_buffer{};
 
 		void InitializeFreeType();
