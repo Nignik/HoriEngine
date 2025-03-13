@@ -4,8 +4,7 @@
 #include <chrono>
 
 #include "Renderer.h"
-#include "Shader.h"
-#include "InputComponent.h"
+#include "Components.h"
 #include "QuadTreeComponent.h"
 #include "Ecs.h"
 

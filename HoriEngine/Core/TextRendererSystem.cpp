@@ -1,7 +1,5 @@
 #include "TextRendererSystem.h"
-#include "Transform.h"
-#include "TextComponent.h"
-#include "Shader.h"
+#include "Components.h"
 #include "Renderer.h"
 
 #include <freetype/freetype.h>
@@ -19,7 +17,7 @@ namespace Hori
 		: m_buffer(std::make_shared<OpenGLBuffer>())
 	{
 		auto& resourceMng = ResourceManager::GetInstance();
-		auto handle = resourceMng.Load<Shader>(std::filesystem::path("shaders/text"));
+		auto handle = resourceMng.Load<ShaderComponent>(std::filesystem::path("shaders/text"));
 		m_shader = resourceMng.Get(handle);
 
 		//glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(screenSize.x), 0.0f, static_cast<float>(screenSize.y));
@@ -121,7 +119,7 @@ namespace Hori
 		auto& world = Ecs::GetInstance();
 
 		auto text = world.GetComponent<TextComponent>(entity);
-		auto transform = world.GetComponent<Transform>(entity);
+		auto transform = world.GetComponent<TransformComponent>(entity);
 
 		m_shader->Use();
 		m_shader->SetVector3f("textColor", text->color);

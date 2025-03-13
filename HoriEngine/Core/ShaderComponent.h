@@ -17,11 +17,11 @@
 
 namespace Hori
 {
-	class Shader
+	class ShaderComponent
 	{
 	public:
 		unsigned int Id;
-		Shader() {}
+		ShaderComponent() {}
 		void    Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr); // note: geometry source code is optional 
 
 		void    SetFloat(const char* name, float value, bool useShader = false);
@@ -34,7 +34,7 @@ namespace Hori
 		void    SetVector4f(const char* name, const glm::vec4& value, bool useShader = false);
 		void    SetMatrix4(const char* name, const glm::mat4& matrix, bool useShader = false);
 
-		Shader& Use();
+		ShaderComponent& Use();
 	private:
 		void    checkCompileErrors(unsigned int object, std::string type);
 	};

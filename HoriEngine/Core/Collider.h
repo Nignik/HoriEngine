@@ -5,7 +5,7 @@
 #include <Entity.h>
 #include <glm/glm.hpp>
 
-#include "Transform.h"
+#include "Components.h"
 #include "EventManager.h"
 #include "Ecs.h"
 
@@ -13,14 +13,14 @@ namespace Hori
 {
 	struct SphereCollider
 	{
-		SphereCollider(Transform transform, bool isTrigger = false)
+		SphereCollider(TransformComponent transform, bool isTrigger = false)
 			: transform(transform),
 			radius(transform.scale.x * 0.5f),
 			isTrigger(isTrigger)
 		{
 		}
 
-		Transform transform;
+		TransformComponent transform;
 		float radius{};
 		bool isTrigger = false;
 	};

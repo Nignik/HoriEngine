@@ -3,8 +3,7 @@
 #include <System.h>
 #include <Entity.h>
 
-#include "Sprite.h"
-#include "Texture.h"
+#include "Components.h"
 #include "OpenGLBuffer.h"
 #include "Ecs.h"
 

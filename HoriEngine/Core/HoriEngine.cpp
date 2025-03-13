@@ -7,10 +7,9 @@
 #include "ActionSystem.h"
 #include "DebugUISystem.h"
 #include "DebugUIComponents.h"
-#include "DebugRendererComponent.h"
 #include "FPSSystem.h"
-#include "FPSComponent.h"
 #include "TextRendererSystem.h"
+#include "Components.h"
 
 namespace Hori
 {

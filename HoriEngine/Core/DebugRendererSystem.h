@@ -3,7 +3,7 @@
 #include <World.h>
 #include <unordered_map>
 
-#include "WireframeComponent.h"
+#include "Components.h"
 #include "Ecs.h"
 
 namespace Hori
@@ -17,6 +17,6 @@ namespace Hori
 	private:
 		void RenderWireframe(Entity entity);
 
-		std::shared_ptr<Shader> m_shader{};
+		std::shared_ptr<ShaderComponent> m_shader{};
 	};
 }

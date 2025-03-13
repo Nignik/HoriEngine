@@ -1,9 +1,9 @@
 #include "PhysicsSystem.h"
 
 #include "Collider.h"
-#include "VelocityComponent.h"
 #include "EventManager.h"
 #include "Renderer.h"
+#include "Components.h"
 
 #include <World.h>
 #include <iostream>
@@ -105,7 +105,7 @@ namespace Hori
 				else
 				{
 					ResolveSphereSphereCollision(eA, eB);
-					glm::vec2 dir = glm::normalize(world.GetComponent<Transform>(eA)->position - world.GetComponent<Transform>(eB)->position);
+					glm::vec2 dir = glm::normalize(world.GetComponent<TransformComponent>(eA)->position - world.GetComponent<TransformComponent>(eB)->position);
 					CollisionEvent event(eA, eB, dir * colB->radius, dir);
 					collisionEvents.push_back(event);
 				}
@@ -142,8 +142,8 @@ namespace Hori
 	{
 		auto& world = Ecs::GetInstance();
 
-		auto transformA = world.GetComponent<Transform>(eA);
-		auto transformB = world.GetComponent<Transform>(eB);
+		auto transformA = world.GetComponent<TransformComponent>(eA);
+		auto transformB = world.GetComponent<TransformComponent>(eB);
 
 		auto colliderA = world.GetComponent<SphereCollider>(eA);
 		auto colliderB = world.GetComponent<SphereCollider>(eB);
@@ -207,7 +207,7 @@ namespace Hori
 	void PhysicsSystem::Move(Entity entity, float deltaTime)
 	{
 		World& world = Ecs::GetInstance();
-		auto& objectPos = world.GetComponent<Transform>(entity)->position;
+		auto& objectPos = world.GetComponent<TransformComponent>(entity)->position;
 		auto vel = world.GetComponent<VelocityComponent>(entity);
 
 		glm::vec2 displacement = vel->dir * vel->speed * deltaTime;

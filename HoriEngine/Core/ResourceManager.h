@@ -7,10 +7,8 @@
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 
-#include "Shader.h"
-#include "Texture.h"
 #include "stb_image.h"
-#include "Shader.h"
+#include "Components.h"
 
 #include <filesystem>
 
@@ -20,7 +18,7 @@ namespace Hori
 	concept AnyOf = (std::same_as<T, Ts> || ...);
 
 	template <typename T>
-	concept ResourceTypes = AnyOf<T, Shader, Texture2D, YAML::Node>;
+	concept ResourceTypes = AnyOf<T, ShaderComponent, SpriteComponent, YAML::Node>;
 
 	template<typename T>
 	struct ResourceHandle
@@ -114,8 +112,8 @@ namespace Hori {
 			requires ResourceTypes<T>
 		ResourceHandle<T> Load(const std::filesystem::path& path)
 		{
-			if constexpr (std::same_as<T, Shader>)						return LoadShaderFromFile(path);
-			else if constexpr (std::same_as<T, Texture2D>)				return LoadTextureFromFile(path, true);
+			if constexpr (std::same_as<T, ShaderComponent>)						return LoadShaderFromFile(path);
+			else if constexpr (std::same_as<T, SpriteComponent>)				return LoadTextureFromFile(path, true);
 			else if constexpr (std::same_as<T, YAML::Node>)				return LoadYaml(path);
 		}
 
@@ -123,8 +121,8 @@ namespace Hori {
 			requires ResourceTypes<T>
 		std::shared_ptr<T> Get(ResourceHandle<T> handle)
 		{
-			if constexpr (std::same_as<T, Shader>)						return m_shaderStorage.GetResource(handle);
-			else if constexpr (std::same_as<T, Texture2D>)				return m_textureStorage.GetResource(handle);
+			if constexpr (std::same_as<T, ShaderComponent>)						return m_shaderStorage.GetResource(handle);
+			else if constexpr (std::same_as<T, SpriteComponent>)				return m_textureStorage.GetResource(handle);
 			else if constexpr (std::same_as<T, YAML::Node>)				return m_yamlStorage.GetResource(handle);
 
 			return nullptr;
@@ -134,11 +132,11 @@ namespace Hori {
 		ResourceManager() = default;
 		~ResourceManager() = default;
 
-		ResourceStorage<Shader> m_shaderStorage;
-		ResourceStorage<Texture2D> m_textureStorage;
+		ResourceStorage<ShaderComponent> m_shaderStorage;
+		ResourceStorage<SpriteComponent> m_textureStorage;
 		ResourceStorage<YAML::Node> m_yamlStorage;
 
-		ResourceHandle<Shader> LoadShaderFromFile(std::filesystem::path path)
+		ResourceHandle<ShaderComponent> LoadShaderFromFile(std::filesystem::path path)
 		{
 			if (m_shaderStorage.IsResourceLoaded(path))
 			{
@@ -188,7 +186,7 @@ namespace Hori {
 			const char* gShaderCode = geometryCode.c_str();
 
 			// 2. now create shader object from source code
-			auto shader = std::make_shared<Shader>();
+			auto shader = std::make_shared<ShaderComponent>();
 			shader->Compile(vShaderCode, fShaderCode, std::filesystem::exists(gShaderPath) ? gShaderCode : nullptr);
 			
 			auto handle = m_shaderStorage.Add(path, shader);
@@ -209,9 +207,14 @@ namespace Hori {
 			return handle;
 		}
 
-		ResourceHandle<Texture2D> LoadTextureFromFile(std::filesystem::path path, bool alpha)
+		ResourceHandle<SpriteComponent> LoadTextureFromFile(std::filesystem::path path, bool alpha)
 		{
-			auto texture = std::make_shared<Texture2D>();
+			if (m_textureStorage.IsResourceLoaded(path))
+			{
+				return m_textureStorage.GetHandle(path);
+			}
+
+			auto texture = std::make_shared<SpriteComponent>();
 			if (alpha)
 			{
 				texture->InternalFormat = GL_RGBA;

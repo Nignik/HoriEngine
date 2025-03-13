@@ -1,7 +1,5 @@
 #include "FPSSystem.h"
-#include "FPSComponent.h"
-#include "TextComponent.h"
-#include "Transform.h"
+#include "Components.h"
 
 #include <iostream>
 
@@ -13,7 +11,7 @@ namespace Hori
 		auto& world = Ecs::GetInstance();
 
 		m_fpsEntity = world.CreateEntity();
-		world.AddComponents(m_fpsEntity, TextComponent("0", { 0.f, 1.f, 0.f }), Transform({ 60.f, 40.f }, 0.f, { 0.05f, 0.05f }), FPSComponent());
+		world.AddComponents(m_fpsEntity, TextComponent("0", { 0.f, 1.f, 0.f }), TransformComponent({ 60.f, 40.f }, 0.f, { 0.05f, 0.05f }), FPSComponent());
 	}
 
 	void FPSSystem::Update(float dt)

@@ -1,18 +1,14 @@
-#include <iostream>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "texture.h"
+#include "SpriteComponent.h"
 
 namespace Hori
 {
-	Texture2D::Texture2D()
+	SpriteComponent::SpriteComponent()
 		: Width(0), Height(0), InternalFormat(GL_RGB), imageFormat(GL_RGB), WrapS(GL_REPEAT), WrapT(GL_REPEAT), FilterMin(GL_LINEAR), FilterMax(GL_LINEAR)
 	{
 		glGenTextures(1, &this->Id);
 	}
 
-	void Texture2D::Generate(uint32_t width, uint32_t height, unsigned char* data)
+	void SpriteComponent::Generate(uint32_t width, uint32_t height, unsigned char* data)
 	{
 		this->Width = width;
 		this->Height = height;
@@ -28,9 +24,8 @@ namespace Hori
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void Texture2D::Bind() const
+	void SpriteComponent::Bind() const
 	{
 		glBindTexture(GL_TEXTURE_2D, this->Id);
 	}
 }
-

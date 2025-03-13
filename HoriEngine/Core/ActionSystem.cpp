@@ -1,13 +1,11 @@
 #include "ActionSystem.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <InputComponent.h>
 #include <World.h>
-#include <controller.h>
-#include <Transform.h>
-#include "VelocityComponent.h"
-
 #include <iostream>
+
+#include "Components.h"
 
 namespace Hori
 {
@@ -16,7 +14,7 @@ namespace Hori
 	{
 		auto& input = Ecs::GetInstance().GetSingletonComponent<InputComponent>()->input;
 		
-		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<Controller>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<ControllerComponent>())
 		{
 			Move(entity, input);
 		}

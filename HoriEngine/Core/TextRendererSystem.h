@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "Shader.h"
+#include "Components.h"
 #include "OpenGLBuffer.h"
 #include "Ecs.h"
 
@@ -28,7 +28,7 @@ namespace Hori
 
 	private:
 		std::unordered_map<GLchar, Character> Characters{};
-		std::shared_ptr<Shader> m_shader{};
+		std::shared_ptr<ShaderComponent> m_shader{};
 		std::shared_ptr<OpenGLBuffer> m_buffer{};
 
 		void InitializeFreeType();

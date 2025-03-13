@@ -118,6 +118,6 @@ namespace Hori
 			}
 		}
 
-		std::shared_ptr<YamlInspectorNode> root;
+		std::shared_ptr<YamlInspectorNode> root{};
 	};
 }

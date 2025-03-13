@@ -1,7 +1,6 @@
 #include "DebugRendererSystem.h"
 
-#include "Transform.h"
-#include "DebugRendererComponent.h"
+#include "Components.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 
@@ -19,7 +18,7 @@ namespace Hori
 	DebugRendererSystem::DebugRendererSystem()
 	{
 		auto& resourceMng = ResourceManager::GetInstance();
-		auto handle = resourceMng.Load<Shader>(std::filesystem::path("shaders/wireframe"));
+		auto handle = resourceMng.Load<ShaderComponent>(std::filesystem::path("shaders/wireframe"));
 		m_shader = resourceMng.Get(handle);
 	}
 
@@ -39,7 +38,7 @@ namespace Hori
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
 	{
-		auto transform = Ecs::GetInstance().GetComponent<Transform>(entity);
+		auto transform = Ecs::GetInstance().GetComponent<TransformComponent>(entity);
 		auto wireframe = Ecs::GetInstance().GetComponent<WireframeComponent>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
