@@ -25,7 +25,7 @@ namespace Hori
 	{
 		uint32_t id{ 0 };
 
-		bool isValid() const { return id != 0; }
+		bool IsValid() const { return id != 0; }
 		bool operator==(const ResourceHandle& other) const { return id == other.id; }
 	};
 }
@@ -50,15 +50,32 @@ namespace Hori {
 			auto it = m_pathToHandle.find(path);
 			if (it != m_pathToHandle.end())
 			{
-				std::cout << "Warning: Tried to add resource that already exists in the storage\n";
+				std::cout << "Log: Reloading resource" << path << '\n';
+				m_resources[it->second] = resource;
 				return it->second;
 			}
+			else
+			{
+				ResourceHandle<T> handle{ m_nextId++ };
+				m_resources.emplace(handle, resource);
+				m_pathToHandle.emplace(path, handle);
 
-			ResourceHandle<T> handle{ m_nextId++ };
-			m_resources.emplace(handle, resource);
-			m_pathToHandle.emplace(path, handle);
+				return handle;
+			}
+		}
 
-			return handle;
+		void Delete(const std::filesystem::path& path)
+		{
+			auto it = m_pathToHandle.find(path);
+			if (it == m_pathToHandle.end())
+			{
+				std::cout << "Warning: Tried to delete resource that isn't loaded\n";
+				return;
+			}
+
+			auto handle = it->second;
+			m_resources.erase(handle);
+			m_pathToHandle.erase(it);
 		}
 
 		std::shared_ptr<T> GetResource(const ResourceHandle<T> handle)
@@ -93,7 +110,7 @@ namespace Hori {
 		uint32_t m_nextId{ 1 };
 		std::unordered_map<ResourceHandle<T>, std::shared_ptr<T>> m_resources{};
 		std::unordered_map<std::filesystem::path, ResourceHandle<T>> m_pathToHandle{};
-
+		//std::unordered_map<ResourceHandle<T>, std::filesystem::path> m_handleToPath{}; // unused
 	};
 
 	class ResourceManager
@@ -112,37 +129,67 @@ namespace Hori {
 			requires ResourceTypes<T>
 		ResourceHandle<T> Load(const std::filesystem::path& path)
 		{
-			if constexpr (std::same_as<T, ShaderComponent>)						return LoadShaderFromFile(path);
-			else if constexpr (std::same_as<T, SpriteComponent>)				return LoadTextureFromFile(path, true);
-			else if constexpr (std::same_as<T, YAML::Node>)				return LoadYaml(path);
+			if constexpr (std::same_as<T, ShaderComponent>)						return LoadShader(path);
+			else if constexpr (std::same_as<T, SpriteComponent>)				return LoadSprite(path, true);
+			else if constexpr (std::same_as<T, YAML::Node>)						return LoadYaml(path);
 		}
-
+		
+		template<typename T>
+			requires ResourceTypes<T>
+		void Unload(const std::filesystem::path& path)
+		{
+			if constexpr (std::same_as<T, ShaderComponent>)						m_shaderStorage.Delete(path);
+			else if constexpr (std::same_as<T, SpriteComponent>)				m_spriteStorage.Delete(path);
+			else if constexpr (std::same_as<T, YAML::Node>)						m_yamlStorage.Delete(path);
+		}
+		
+		// Returns a shared_ptr to the resource
+		// If the handle is invalid, returns nullptr
 		template<typename T>
 			requires ResourceTypes<T>
 		std::shared_ptr<T> Get(ResourceHandle<T> handle)
 		{
 			if constexpr (std::same_as<T, ShaderComponent>)						return m_shaderStorage.GetResource(handle);
-			else if constexpr (std::same_as<T, SpriteComponent>)				return m_textureStorage.GetResource(handle);
-			else if constexpr (std::same_as<T, YAML::Node>)				return m_yamlStorage.GetResource(handle);
+			else if constexpr (std::same_as<T, SpriteComponent>)				return m_spriteStorage.GetResource(handle);
+			else if constexpr (std::same_as<T, YAML::Node>)						return m_yamlStorage.GetResource(handle);
 
 			return nullptr;
 		}
+
+		template<typename T>
+			requires ResourceTypes<T>
+		std::shared_ptr<T> Get(std::filesystem::path& path)
+		{
+			if constexpr (std::same_as<T, ShaderComponent>)
+			{
+				auto handle = LoadShader(path);
+				return m_shaderStorage.GetResource(handle);
+			}
+			else if constexpr (std::same_as<T, SpriteComponent>)
+			{
+				auto handle = LoadSprite(path, true);
+				return m_spriteStorage.GetResource(handle);
+			}
+			else if constexpr (std::same_as<T, YAML::Node>)
+			{
+				auto handle = LoadYaml(path);
+				return m_yamlStorage.GetResource(handle);
+			}
+
+			return nullptr;
+		}
+
 
 	private:
 		ResourceManager() = default;
 		~ResourceManager() = default;
 
 		ResourceStorage<ShaderComponent> m_shaderStorage;
-		ResourceStorage<SpriteComponent> m_textureStorage;
+		ResourceStorage<SpriteComponent> m_spriteStorage;
 		ResourceStorage<YAML::Node> m_yamlStorage;
 
-		ResourceHandle<ShaderComponent> LoadShaderFromFile(std::filesystem::path path)
+		ResourceHandle<ShaderComponent> LoadShader(std::filesystem::path path)
 		{
-			if (m_shaderStorage.IsResourceLoaded(path))
-			{
-				return m_shaderStorage.GetHandle(path);
-			}
-		
 			std::filesystem::path vShaderPath = path; 
 			std::filesystem::path fShaderPath = path; 
 			std::filesystem::path gShaderPath = path; 
@@ -196,24 +243,14 @@ namespace Hori {
 
 		ResourceHandle<YAML::Node> LoadYaml(const std::filesystem::path& path)
 		{
-			if (m_yamlStorage.IsResourceLoaded(path))
-			{
-				return m_yamlStorage.GetHandle(path);
-			}
-
 			auto resource = std::make_shared<YAML::Node>(YAML::LoadFile(path.string()));
 			auto handle = m_yamlStorage.Add(path, resource);
 
 			return handle;
 		}
 
-		ResourceHandle<SpriteComponent> LoadTextureFromFile(std::filesystem::path path, bool alpha)
+		ResourceHandle<SpriteComponent> LoadSprite(std::filesystem::path path, bool alpha)
 		{
-			if (m_textureStorage.IsResourceLoaded(path))
-			{
-				return m_textureStorage.GetHandle(path);
-			}
-
 			auto texture = std::make_shared<SpriteComponent>();
 			if (alpha)
 			{
@@ -232,7 +269,7 @@ namespace Hori {
 			// and finally free image data
 			stbi_image_free(data);
 
-			auto handle = m_textureStorage.Add(path, texture);
+			auto handle = m_spriteStorage.Add(path, texture);
 
 			return handle;
 		}

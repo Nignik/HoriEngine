@@ -8,11 +8,12 @@
 #include <yaml-cpp//yaml.h>
 #include <fstream>
 
+#include "ResourceManager.h"
+
 namespace fs = std::filesystem;
 
 namespace Hori
 {
-
 	class YamlInspectorNode : public std::enable_shared_from_this<YamlInspectorNode>
 	{
 	public:
@@ -102,22 +103,17 @@ namespace Hori
 
 	struct YamlInspectorComponent
 	{
-		void OpenFile(const fs::path& filePath)
+		void Open(const std::filesystem::path& path)
 		{
-			if (fs::exists(filePath))
-			{
-				YAML::Node node = YAML::LoadFile(filePath.string().c_str());
+			auto& resourceMng = ResourceManager::GetInstance();
+			auto handle = resourceMng.Load<YAML::Node>(path);
+			auto node = *resourceMng.Get(handle);
 
-				root = std::make_shared<YamlInspectorNode>(node, filePath);
-				root->Init();
-				root->label = filePath.string();
-			}
-			else
-			{
-				std::cout << "ERROR: File path passed to yaml inspector doesnt exist" << std::endl;
-			}
+			root = std::make_shared<YamlInspectorNode>(node, path);
+			root->Init();
+			root->label = path.string();
 		}
-
+		
 		std::shared_ptr<YamlInspectorNode> root{};
 	};
 }
