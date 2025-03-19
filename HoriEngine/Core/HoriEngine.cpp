@@ -87,6 +87,7 @@ namespace Hori
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			Renderer::GetInstance().EndFrame();
+			EventManager::GetInstance().DispatchEvents();
 			EventManager::GetInstance().Clear();
 		}
 

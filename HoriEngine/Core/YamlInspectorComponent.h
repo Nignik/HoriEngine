@@ -73,19 +73,19 @@ namespace Hori
 			YamlInspectorNode* node = static_cast<YamlInspectorNode*>(data->UserData);
 			if (node)
 			{
-				node->SetBuffer(data);
+				node->SetBuffer(data, node->filePath);
 			}
 			return 0;
 		}
 
-		void SetBuffer(ImGuiInputTextCallbackData* data)
+		void SetBuffer(ImGuiInputTextCallbackData* data, const std::filesystem::path& path)
 		{
 			if (data->EventFlag & ImGuiInputTextFlags_CallbackEdit)
 			{
 				node = data->Buf;
 				YAML::Emitter out;
 				out << root->node;
-				std::ofstream fout(filePath);
+				std::ofstream fout(path);
 				fout << out.c_str();
 				fout.close();
 			}
@@ -103,17 +103,37 @@ namespace Hori
 
 	struct YamlInspectorComponent
 	{
+		YamlInspectorComponent(const std::filesystem::path& saveRootPath)
+			: saveRootPath{ saveRootPath }
+		{}
+
 		void Open(const std::filesystem::path& path)
 		{
 			auto& resourceMng = ResourceManager::GetInstance();
 			auto handle = resourceMng.Load<YAML::Node>(path);
 			auto node = *resourceMng.Get(handle);
-
+			
 			root = std::make_shared<YamlInspectorNode>(node, path);
 			root->Init();
 			root->label = path.string();
 		}
-		
+
+		void SetSaveRootPath(const std::filesystem::path& path)
+		{
+			saveRootPath = path;
+		}
+
+		void Save() const
+		{
+			YAML::Emitter out;
+			out << root->node;
+			std::ofstream fout(saveRootPath / root->filePath);
+			std::cout << "Log: Saving yaml to: " << saveRootPath / root->filePath << '\n';
+			fout << out.c_str();
+			fout.close();
+		}
+
 		std::shared_ptr<YamlInspectorNode> root{};
+		std::filesystem::path saveRootPath{};
 	};
 }

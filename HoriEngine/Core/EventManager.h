@@ -4,6 +4,8 @@
 #include <vector>
 #include <typeindex>
 #include <memory>
+#include <unordered_map>
+#include <functional>
 
 namespace Hori
 {
@@ -29,6 +31,36 @@ namespace Hori
 		{
 			std::unique_ptr<EventType> event = std::make_unique<EventType>(std::forward<Args>(args)...);
 			m_eventQueues[std::type_index(typeid(EventType))].push_back(std::move(event));
+		}
+
+		template <typename EventType>
+		void Subscribe(std::function<void(const EventType&)> listener)
+		{
+			auto wrapper = [fn = std::move(listener)](const IEvent& e) {
+				fn(static_cast<const EventType&>(e));
+				};
+			m_subscribers[std::type_index(typeid(EventType))].push_back(std::move(wrapper));
+		}
+
+		void DispatchEvents()
+		{
+			for (auto& [typeIdx, events] : m_eventQueues)
+            {
+                auto subIter = m_subscribers.find(typeIdx);
+                if (subIter != m_subscribers.end())
+                {
+                    // For each event in that queue
+                    for (auto& eventPtr : events)
+                    {
+                        // Call every subscriber
+                        for (auto& subscriberFn : subIter->second)
+                        {
+                            subscriberFn(*eventPtr);
+                        }
+                    }
+                }
+            }
+            Clear();
 		}
 
 		template<typename EventType>
@@ -75,7 +107,9 @@ namespace Hori
 
 	private:
 		EventManager() = default;
-
-		std::unordered_map<std::type_index, std::vector<std::unique_ptr<IEvent>>> m_eventQueues;
+		
+		std::unordered_map<std::type_index, std::vector<std::unique_ptr<IEvent>>> m_eventQueues{};
+        using SubscriberFn = std::function<void(const IEvent&)>;
+		std::unordered_map<std::type_index, std::vector<SubscriberFn>> m_subscribers{};
 	};
 }

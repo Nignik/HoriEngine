@@ -57,7 +57,8 @@ namespace Hori
 		{
 			if (ImGui::Button("<-"))
 			{
-				fileBrowser->path = fileBrowser->path.parent_path();
+				if (std::filesystem::exists(fileBrowser->path.parent_path()))
+					fileBrowser->path = fileBrowser->path.parent_path();
 			}
 			ImGui::SameLine();
 			ImGui::Text("%s", fileBrowser->path.c_str());
