@@ -79,7 +79,7 @@ namespace Hori
 				{
 					ImGui::Selectable(filename.c_str(), fileBrowser->selectedFilePath == path);
 
-					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 					{
 						fileBrowser->selectedFilePath = path;
 					}
