@@ -1,5 +1,9 @@
 ﻿#include "HoriEngine.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_HAS_DOCK
+#include <imgui.h>
+
 #include "Ecs.h"
 #include "PhysicsSystem.h"
 #include "SpriteRenderer.h"
@@ -10,6 +14,7 @@
 #include "FPSSystem.h"
 #include "TextRendererSystem.h"
 #include "Components.h"
+#include "ImGuiThemes.h"
 
 namespace Hori
 {
@@ -69,7 +74,10 @@ namespace Hori
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(Renderer::GetInstance().GetWindow(), true);
 		ImGui_ImplOpenGL3_Init("#version 450");
-
+		
+		UseDefaultStyle();
+		ImGui_ImplOpenGL3_CreateDeviceObjects();
+			
 		while (!Renderer::GetInstance().ShouldClose())
 		{
 			currentTime = std::chrono::high_resolution_clock::now();
@@ -80,8 +88,9 @@ namespace Hori
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			Renderer::GetInstance().StartFrame();
+			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_PassthruCentralNode);
 
+			Renderer::GetInstance().StartFrame();
 			Ecs::GetInstance().UpdateSystems(deltaTime.count());
 
 			ImGui::Render();

@@ -18,8 +18,8 @@ namespace Hori
 	DebugRendererSystem::DebugRendererSystem()
 	{
 		auto& resourceMng = ResourceManager::GetInstance();
-		auto handle = resourceMng.Load<ShaderComponent>(std::filesystem::path("shaders/wireframe"));
-		m_shader = resourceMng.Get(handle);
+		std::filesystem::path shaderPath{ "shaders/wireframe" };
+		m_shader = *resourceMng.Get<ShaderComponent>(shaderPath);
 	}
 
  	void DebugRendererSystem::Update(float dt)
@@ -48,10 +48,10 @@ namespace Hori
 		model = glm::rotate(model, glm::radians(transform->rotation), glm::vec3(0.0, 0.0, 1.0));
 		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
-		m_shader->Use();
-		m_shader->SetMatrix4("model", model);
-		m_shader->SetMatrix4("projection", projection);
-		m_shader->SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
+		m_shader.Use();
+		m_shader.SetMatrix4("model", model);
+		m_shader.SetMatrix4("projection", projection);
+		m_shader.SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);

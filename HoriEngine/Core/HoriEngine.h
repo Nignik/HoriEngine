@@ -27,7 +27,7 @@ namespace Hori
 		Engine();
 		~Engine();
 
-		std::chrono::steady_clock::time_point m_prevTime;
+		std::chrono::steady_clock::time_point m_prevTime{};
 		Entity m_debugUI{};
 
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);

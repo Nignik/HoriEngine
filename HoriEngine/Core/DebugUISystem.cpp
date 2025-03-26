@@ -21,10 +21,12 @@ namespace Hori
 	void DebugUISystem::Update(float dt)
 	{
 		auto& world = Ecs::GetInstance();
+		ImGui::Begin("Debug");
 		for (auto entity : world.GetEntitiesWith<ButtonComponent>())
 		{
 			RenderButton(entity);
 		}
+		ImGui::End();
 
 		for (auto entity : world.GetEntitiesWith<FileBrowserComponent>())
 		{
