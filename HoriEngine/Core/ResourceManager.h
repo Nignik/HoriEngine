@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glad/glad.h>
 #include <yaml-cpp/yaml.h>
 
 #include "stb_image.h"
@@ -18,7 +19,7 @@ namespace Hori
 	concept AnyOf = (std::same_as<T, Ts> || ...);
 
 	template <typename T>
-	concept ResourceTypes = AnyOf<T, ShaderComponent, SpriteComponent, YAML::Node>;
+	concept ResourceTypes = AnyOf<T, Shader, Sprite, YAML::Node>;
 
 	template<typename T>
 	struct ResourceHandle
@@ -129,8 +130,8 @@ namespace Hori {
 			requires ResourceTypes<T>
 		ResourceHandle<T> Load(const std::filesystem::path& path)
 		{
-			if constexpr (std::same_as<T, ShaderComponent>)						return LoadShader(path);
-			else if constexpr (std::same_as<T, SpriteComponent>)				return LoadSprite(path, true);
+			if constexpr (std::same_as<T, Shader>)						return LoadShader(path);
+			else if constexpr (std::same_as<T, Sprite>)				return LoadSprite(path, true);
 			else if constexpr (std::same_as<T, YAML::Node>)						return LoadYaml(path);
 		}
 		
@@ -138,8 +139,8 @@ namespace Hori {
 			requires ResourceTypes<T>
 		void Unload(const std::filesystem::path& path)
 		{
-			if constexpr (std::same_as<T, ShaderComponent>)						m_shaderStorage.Delete(path);
-			else if constexpr (std::same_as<T, SpriteComponent>)				m_spriteStorage.Delete(path);
+			if constexpr (std::same_as<T, Shader>)						m_shaderStorage.Delete(path);
+			else if constexpr (std::same_as<T, Sprite>)				m_spriteStorage.Delete(path);
 			else if constexpr (std::same_as<T, YAML::Node>)						m_yamlStorage.Delete(path);
 		}
 		
@@ -149,8 +150,8 @@ namespace Hori {
 			requires ResourceTypes<T>
 		std::shared_ptr<T> Get(ResourceHandle<T> handle)
 		{
-			if constexpr (std::same_as<T, ShaderComponent>)						return m_shaderStorage.GetResource(handle);
-			else if constexpr (std::same_as<T, SpriteComponent>)				return m_spriteStorage.GetResource(handle);
+			if constexpr (std::same_as<T, Shader>)						return m_shaderStorage.GetResource(handle);
+			else if constexpr (std::same_as<T, Sprite>)				return m_spriteStorage.GetResource(handle);
 			else if constexpr (std::same_as<T, YAML::Node>)						return m_yamlStorage.GetResource(handle);
 
 			return nullptr;
@@ -158,14 +159,14 @@ namespace Hori {
 
 		template<typename T>
 			requires ResourceTypes<T>
-		std::shared_ptr<T> Get(std::filesystem::path& path)
+		std::shared_ptr<T> Get(const std::filesystem::path& path)
 		{
-			if constexpr (std::same_as<T, ShaderComponent>)
+			if constexpr (std::same_as<T, Shader>)
 			{
 				auto handle = LoadShader(path);
 				return m_shaderStorage.GetResource(handle);
 			}
-			else if constexpr (std::same_as<T, SpriteComponent>)
+			else if constexpr (std::same_as<T, Sprite>)
 			{
 				auto handle = LoadSprite(path, true);
 				return m_spriteStorage.GetResource(handle);
@@ -184,11 +185,11 @@ namespace Hori {
 		ResourceManager() = default;
 		~ResourceManager() = default;
 
-		ResourceStorage<ShaderComponent> m_shaderStorage;
-		ResourceStorage<SpriteComponent> m_spriteStorage;
+		ResourceStorage<Shader> m_shaderStorage;
+		ResourceStorage<Sprite> m_spriteStorage;
 		ResourceStorage<YAML::Node> m_yamlStorage;
 
-		ResourceHandle<ShaderComponent> LoadShader(std::filesystem::path path)
+		ResourceHandle<Shader> LoadShader(std::filesystem::path path)
 		{
 			std::filesystem::path vShaderPath = path; 
 			std::filesystem::path fShaderPath = path; 
@@ -233,7 +234,7 @@ namespace Hori {
 			const char* gShaderCode = geometryCode.c_str();
 
 			// 2. now create shader object from source code
-			auto shader = std::make_shared<ShaderComponent>();
+			auto shader = std::make_shared<Shader>();
 			shader->Compile(vShaderCode, fShaderCode, std::filesystem::exists(gShaderPath) ? gShaderCode : nullptr);
 			
 			auto handle = m_shaderStorage.Add(path, shader);
@@ -249,9 +250,9 @@ namespace Hori {
 			return handle;
 		}
 
-		ResourceHandle<SpriteComponent> LoadSprite(std::filesystem::path path, bool alpha)
+		ResourceHandle<Sprite> LoadSprite(std::filesystem::path path, bool alpha)
 		{
-			auto texture = std::make_shared<SpriteComponent>();
+			auto texture = std::make_shared<Sprite>();
 			if (alpha)
 			{
 				texture->InternalFormat = GL_RGBA;

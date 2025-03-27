@@ -9,7 +9,7 @@
 #include <imgui_impl_opengl3_loader.h>
 #include <imgui_impl_glfw.h>
 
-#include "YamlInspectorComponent.h"
+#include "YamlInspector.h"
 #include "Ecs.h"
 
 namespace Hori

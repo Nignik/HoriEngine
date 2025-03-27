@@ -12,9 +12,9 @@ namespace Hori
 
 	void ActionSystem::Update(float deltaTime)
 	{
-		auto& input = Ecs::GetInstance().GetSingletonComponent<InputComponent>()->input;
+		auto& input = Ecs::GetInstance().GetSingletonComponent<Input>()->input;
 		
-		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<ControllerComponent>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<Controller>())
 		{
 			Move(entity, input);
 		}
@@ -22,7 +22,7 @@ namespace Hori
 
 	void ActionSystem::Move(const Entity& entity, std::vector<int>& input)
 	{
-		auto velocity = Ecs::GetInstance().GetComponent<VelocityComponent>(entity);
+		auto velocity = Ecs::GetInstance().GetComponent<Velocity>(entity);
 		*velocity = { {0.0f, 0.0f}, velocity->speed };
 
 		if (input[GLFW_KEY_W])

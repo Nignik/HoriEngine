@@ -19,17 +19,17 @@ namespace Hori
 	{
 		auto& resourceMng = ResourceManager::GetInstance();
 		std::filesystem::path shaderPath{ "shaders/wireframe" };
-		m_shader = *resourceMng.Get<ShaderComponent>(shaderPath);
+		m_shader = *resourceMng.Get<Shader>(shaderPath);
 	}
 
  	void DebugRendererSystem::Update(float dt)
  	{
  		auto& world = Ecs::GetInstance();
 		
-		auto& enabled = world.GetSingletonComponent<DebugRendererComponent>()->enabled;
+		auto& enabled = world.GetSingletonComponent<DebugRenderer>()->enabled;
 		if (enabled[DebugDraw::COLLIDER_WIREFRAME])
 		{
-			for (auto& entity : world.GetEntitiesWith<WireframeComponent>())
+			for (auto& entity : world.GetEntitiesWith<Wireframe>())
 			{
 				RenderWireframe(entity);
 			}
@@ -38,8 +38,8 @@ namespace Hori
 
 	void DebugRendererSystem::RenderWireframe(Entity entity)
 	{
-		auto transform = Ecs::GetInstance().GetComponent<TransformComponent>(entity);
-		auto wireframe = Ecs::GetInstance().GetComponent<WireframeComponent>(entity);
+		auto transform = Ecs::GetInstance().GetComponent<Transform>(entity);
+		auto wireframe = Ecs::GetInstance().GetComponent<Wireframe>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
 		
@@ -49,9 +49,9 @@ namespace Hori
 		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
 		m_shader.Use();
-		m_shader.SetMatrix4("model", model);
-		m_shader.SetMatrix4("projection", projection);
-		m_shader.SetVector3f("color", glm::vec3(0.3f, 0.4f, 0.0f));
+		m_shader.SetUniform("model", model);
+		m_shader.SetUniform("projection", projection);
+		m_shader.SetUniform("color", glm::vec3(0.3f, 0.4f, 0.0f));
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glLineWidth(5.0f);

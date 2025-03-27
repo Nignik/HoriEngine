@@ -17,6 +17,6 @@ namespace Hori
 	private:
 		void RenderWireframe(Entity entity);
 
-		ShaderComponent m_shader{};
+		Shader m_shader{};
 	};
 }

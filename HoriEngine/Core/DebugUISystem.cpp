@@ -33,7 +33,7 @@ namespace Hori
 			RenderFileBrowser(entity);
 		}
 
-		for (auto entity : world.GetEntitiesWith<YamlInspectorComponent>())
+		for (auto entity : world.GetEntitiesWith<YamlInspector>())
 		{
 			RenderYamlInspector(entity);
 		}
@@ -95,7 +95,7 @@ namespace Hori
 	{
 		auto& world = Ecs::GetInstance();
 
-		auto yamlInspector = world.GetComponent<YamlInspectorComponent>(entity);
+		auto yamlInspector = world.GetComponent<YamlInspector>(entity);
 		if (ImGui::Begin("yaml inspector"))
 		{
 			if (yamlInspector->root != nullptr)

@@ -39,7 +39,7 @@ namespace Hori
 
 	void SpriteRenderer::Update(float deltaTime)
 	{
-		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<SpriteComponent>())
+		for (const auto& entity : Ecs::GetInstance().GetEntitiesWith<Sprite>())
 		{
 			DrawSprite(entity);
 		}
@@ -47,9 +47,9 @@ namespace Hori
 
 	void SpriteRenderer::DrawSprite(const Entity& entity)
 	{
-		auto shader = Ecs::GetInstance().GetComponent<ShaderComponent>(entity);
-		auto transform = Ecs::GetInstance().GetComponent<TransformComponent>(entity);
-		auto sprite = Ecs::GetInstance().GetComponent<SpriteComponent>(entity);
+		auto shader = Ecs::GetInstance().GetComponent<Shader>(entity);
+		auto transform = Ecs::GetInstance().GetComponent<Transform>(entity);
+		auto sprite = Ecs::GetInstance().GetComponent<Sprite>(entity);
 
 		glm::mat4 projection = Hori::Renderer::GetInstance().GetProjectionMatrix();
 
@@ -60,10 +60,10 @@ namespace Hori
 		
 		model = glm::scale(model, glm::vec3(transform->scale, 1.0f));
 
-		shader->SetMatrix4("model", model);
-		shader->SetVector3f("spriteColor", glm::vec3(1.0f, 0.0f, 0.0f));
-		shader->SetMatrix4("projection", projection);
-		shader->SetInteger("sprite", 0);
+		shader->SetUniform("model", model);
+		shader->SetUniform("spriteColor", glm::vec3(1.0f, 0.0f, 0.0f));
+		shader->SetUniform("projection", projection);
+		shader->SetUniform("sprite", 0);
 
 		glActiveTexture(GL_TEXTURE0);
 		sprite->Bind();

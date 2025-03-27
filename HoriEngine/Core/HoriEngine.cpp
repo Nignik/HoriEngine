@@ -53,17 +53,17 @@ namespace Hori
 		world.AddSystem<DebugUISystem>(Renderer::GetInstance().GetWindow());
 		world.AddSystem<DebugRendererSystem>();
 
-		world.AddSingletonComponent(DebugRendererComponent());
+		world.AddSingletonComponent(DebugRenderer());
 
 		m_debugUI = world.CreateEntity();
-		ButtonComponent showColliders("Show collider wireframes", std::bind(&DebugRendererComponent::Switch, world.GetSingletonComponent<DebugRendererComponent>(), DebugDraw::COLLIDER_WIREFRAME));
+		ButtonComponent showColliders("Show collider wireframes", std::bind(&DebugRenderer::Switch, world.GetSingletonComponent<DebugRenderer>(), DebugDraw::COLLIDER_WIREFRAME));
 		world.AddComponents(m_debugUI, std::move(showColliders));
 	}
 
 	void Engine::InitSingletonComponents()
 	{
 		auto& world = Ecs::GetInstance();
-		world.AddSingletonComponent(InputComponent());
+		world.AddSingletonComponent(Input());
 		world.AddSingletonComponent(QuadTreeComponent());
 	}
 
@@ -110,7 +110,7 @@ namespace Hori
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		auto& input = Ecs::GetInstance().GetSingletonComponent<InputComponent>()->input;
+		auto& input = Ecs::GetInstance().GetSingletonComponent<Input>()->input;
 
 		if (key >= 0 && key < 1024)
 		{

@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <yaml-cpp//yaml.h>
+#include <yaml-cpp/yaml.h>
 #include <fstream>
 
 #include "ResourceManager.h"
@@ -99,19 +99,16 @@ namespace Hori
 		std::vector<std::shared_ptr<YamlInspectorNode>> children{};
 	};
 
-	
-
-	struct YamlInspectorComponent
+	struct YamlInspector
 	{
-		YamlInspectorComponent(const std::filesystem::path& saveRootPath)
+		YamlInspector(const std::filesystem::path& saveRootPath)
 			: saveRootPath{ saveRootPath }
 		{}
 
 		void Open(const std::filesystem::path& path)
 		{
 			auto& resourceMng = ResourceManager::GetInstance();
-			auto handle = resourceMng.Load<YAML::Node>(path);
-			auto node = *resourceMng.Get(handle);
+			auto node = *resourceMng.Get<YAML::Node>(path);
 			
 			root = std::make_shared<YamlInspectorNode>(node, path);
 			root->Init();
@@ -136,4 +133,5 @@ namespace Hori
 		std::shared_ptr<YamlInspectorNode> root{};
 		std::filesystem::path saveRootPath{};
 	};
+
 }

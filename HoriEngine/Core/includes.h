@@ -28,4 +28,4 @@
 #include "TransformComponent.h"
 #include "VelocityComponent.h"
 #include "WireframeComponent.h"
-#include "YamlInspectorComponent.h"
+#include "YamlInspector.h"

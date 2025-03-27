@@ -17,13 +17,13 @@ namespace Hori
 		: m_buffer(std::make_shared<OpenGLBuffer>())
 	{
 		auto& resourceMng = ResourceManager::GetInstance();
-		auto handle = resourceMng.Load<ShaderComponent>(std::filesystem::path("shaders/text"));
+		auto handle = resourceMng.Load<Shader>(std::filesystem::path("shaders/text"));
 		m_shader = resourceMng.Get(handle);
 
 		//glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(screenSize.x), 0.0f, static_cast<float>(screenSize.y));
 		glm::mat4 projection = Renderer::GetInstance().GetProjectionMatrix();
 		m_shader->Use();
-		m_shader->SetMatrix4("projection", projection);
+		m_shader->SetUniform("projection", projection);
 
 		InitializeFreeType();
 		InitializeQuad();
@@ -33,7 +33,7 @@ namespace Hori
 	{
 		auto& world = Ecs::GetInstance();
 
-		for (auto& entity : world.GetEntitiesWith<TextComponent>())
+		for (auto& entity : world.GetEntitiesWith<Text>())
 		{
 			RenderText(entity);
 		}
@@ -118,12 +118,12 @@ namespace Hori
 	{
 		auto& world = Ecs::GetInstance();
 
-		auto text = world.GetComponent<TextComponent>(entity);
-		auto transform = world.GetComponent<TransformComponent>(entity);
+		auto text = world.GetComponent<Text>(entity);
+		auto transform = world.GetComponent<Transform>(entity);
 
 		m_shader->Use();
-		m_shader->SetVector3f("textColor", text->color);
-		m_shader->SetInteger("text", 0);
+		m_shader->SetUniform("textColor", text->color);
+		m_shader->SetUniform("text", 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_buffer->vao);
 

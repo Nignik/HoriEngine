@@ -6,7 +6,6 @@
 #include <memory>
 #include <vector>
 #include <World.h>
-#include <Collider.h>
 #include <unordered_map>
 #include <map>
 
@@ -45,7 +44,7 @@ namespace Hori
 			auto& world = Ecs::GetInstance();
 			for (auto& object : objects)
 			{
-				auto position = world.GetComponent<TransformComponent>(object)->position;
+				auto position = world.GetComponent<Transform>(object)->position;
 				if (nwRect.Contains(position))      nwObjects.push_back(object);
 				else if (neRect.Contains(position)) neObjects.push_back(object);
 				else if (swRect.Contains(position)) swObjects.push_back(object);
