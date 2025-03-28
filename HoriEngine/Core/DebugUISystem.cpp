@@ -109,16 +109,14 @@ namespace Hori
 
 	void DebugUISystem::RenderYamlInspectorNode(std::shared_ptr<YamlInspectorNode> node, int& idx)
 	{
-		ImGui::PushID(idx++);
-
 		if (node->node.IsScalar())
 		{
 			ImGui::InputText(node->label.c_str(), &node->inputBuffer, ImGuiInputTextFlags_CallbackEdit, YamlInspectorNode::InputTextCallback, static_cast<void*>(node.get()));
-			ImGui::PopID();
 			return;
 		}
-
-		if (ImGui::TreeNode(node->label.c_str()))
+		
+		std::string treeLabel = node->label + "##" + std::to_string(idx);
+		if (ImGui::TreeNodeEx((void*)node.get(), 0, "%s", node->label.c_str()))
 		{
 			if (node->node.IsMap())
 			{
@@ -137,7 +135,5 @@ namespace Hori
 
 			ImGui::TreePop();
 		}
-
-		ImGui::PopID();
 	}
 }

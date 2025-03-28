@@ -59,6 +59,7 @@ namespace Hori
 					auto childNode = std::make_shared<YamlInspectorNode>(node[i], filePath);
 					childNode->Init(root);
 					childNode->label = "[" + std::to_string(i) + "]";
+					childNode->inputBuffer = node[i].as<std::string>();
 					children.push_back(childNode);
 				}
 			}
